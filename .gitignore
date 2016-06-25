@@ -1,0 +1,7 @@
+build
+.c9
+.lock-wscript
+/node_modules/
+/nbproject/private/
+/lib/binding/
+.c9/
