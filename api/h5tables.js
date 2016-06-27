@@ -6,8 +6,6 @@ var h5tb = require('hdf5').h5tb;
 var h5pt = require('hdf5').h5pt;
 
 var co = require('co');
-var bson = require("bson");
-var BSON = new bson.BSONPure.BSON();
 
 var Access = require('hdf5/lib/globals').Access;
 var CreationOrder = require('hdf5/lib/globals').CreationOrder;
@@ -42,7 +40,7 @@ module.exports.makeTable = function * makeTable2(path) {
                   console.log('received: %s', message);
               }
               else{
-                  var tableModelBuffer=BSON.deserialize(message, {promoteBuffers: true});
+                  var tableModelBuffer=message;
 
 var tableModel=Array();
 for(var propertyName in tableModelBuffer[1]) {

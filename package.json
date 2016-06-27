@@ -13,14 +13,13 @@
   "dependencies" : {
     "co" : "4.6.0",
     "ws" : "1.1.1",
-    "bson" : "0.4.23",
-    "require-dir" : "0.3.0",
     "hdf5" : "0.2.1"
   },
   "devDependencies" : {
     "mocha" : "2.5.3",
     "co-mocha" : "1.1.2",
-    "should" : "9.0.2"
+    "should" : "9.0.2",
+    "nightwatch" : "0.9.5"
   },
   "contributors" : [ "Roger I Martin <mathmldashx@yahoo.com> (https://github.com/rimmartin/)" ],
   "license" : "MIT",

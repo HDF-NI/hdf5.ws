@@ -1,0 +1,18 @@
+<html><head>
+<meta http-equiv="Content-Language" content="en">
+          <meta http-equiv="Content-Type" content="text/html" charset="utf-8">
+  <title>HDF5 Interface</title>
+  <link rel="shortcut icon" href="data:image/x-icon;," type="image/x-icon">
+  <script type="text/javascript" src="HDF5Interface.js"></script>
+  </head>
+<body>
+<div></output><script>
+function makeDataSet(){
+    var data=new Float64Array([1.0, 2.0, 3.0, 5.0]);
+    var hdf5Interface=new HDF5Interface();
+    hdf5Interface.makeDataset(data, "/pmcservices%2Fx-ray%2Frefinement%2FMatrix");
+
+}
+</script><form><button type="button" name="hdf5makedataset" onclick="makeDataSet()">Make Dataset</button><form><output id="results"></div>
+</body>
+</html>
