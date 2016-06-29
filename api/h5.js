@@ -4,9 +4,6 @@ var h5lt = require('hdf5').h5lt;
 var h5tb = require('hdf5').h5tb;
 var h5pt = require('hdf5').h5pt;
 
-var co = require('co');
-var BinaryServer = require('binaryjs').BinaryServer;
-
 var Access = require('hdf5/lib/globals').Access;
 var CreationOrder = require('hdf5/lib/globals').CreationOrder;
 var State = require('hdf5/lib/globals').State;
@@ -32,4 +29,17 @@ module.exports.createH5 = function * createH5(path) {
     global.currentH5Path=leaf;
     var file = new hdf5.File(leaf, Access.ACC_TRUNC);
     file.close();
+}
+
+module.exports.createGroup = function createGroup(path) {
+    path=decodeURIComponent(path);
+    if(!path.startsWith("/create_group/")) return;
+    console.dir("got to make create group");
+    path=path.substring(14);
+    console.dir(path);
+    var file = new hdf5.File(global.currentH5Path, Access.ACC_RDWR);
+    var group=file.createGroup(path);
+    group.close();
+    file.close();
+    return;
 }

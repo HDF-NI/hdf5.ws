@@ -9,7 +9,9 @@ var path = require('path')
 var hdf5 = require('hdf5').hdf5;
 var Access = require('hdf5/lib/globals').Access;
 
+var h5 = require('../api/h5.js');
 var h5datasets = require('../api/h5datasets.js');
+var h5images = require('../api/h5images.js');
 
 describe('HDF5 datasets from browser', function() {
   var client = nightwatch.initClient({
@@ -30,8 +32,8 @@ describe('HDF5 datasets from browser', function() {
 
   if(global.currentH5Path.length>0 && !fs.existsSync(global.currentH5Path)){
       var file = new hdf5.File(global.currentH5Path, Access.ACC_TRUNC);
-            const group=file.createGroup('pmcservices/x-ray/refinement');
-            group.close();
+            //const group=file.createGroup('pmcservices/x-ray/refinement');
+            //group.close();
       file.close();
   }
 
@@ -42,6 +44,18 @@ describe('HDF5 datasets from browser', function() {
        var resourcePath=path.normalize(requestUrl.pathname);
        if(resourcePath.startsWith("/make_dataset/")){
          h5datasets.makeDataset(resourcePath);
+         response.writeHead(200);
+         //response.write("hoe");
+             response.end("");
+       }
+       else if(resourcePath.startsWith("/make_image/")){
+         h5images.makeImage(resourcePath);
+         response.writeHead(200);
+         //response.write("hoe");
+             response.end("");
+       }
+       else if(resourcePath.startsWith("/create_group/")){
+         h5.createGroup(resourcePath);
          response.writeHead(200);
          //response.write("hoe");
              response.end("");
@@ -82,7 +96,7 @@ describe('HDF5 datasets from browser', function() {
   it('test datasets', function (done) {
     browser
       .url('http://'+os.hostname()+':8888/typedarrays.html')
-      .waitForElementVisible('body', 5000)
+      .waitForElementVisible('body', 20000)
       .assert.title('HDF5 Interface')
       .waitForElementVisible('button[name=hdf5makedataset]', 1000)
       .click('button[name=hdf5makedataset]')
