@@ -10,7 +10,7 @@ var hdf5 = require('hdf5').hdf5;
 var Access = require('hdf5/lib/globals').Access;
 
 var h5 = require('../api/h5.js');
-var h5datasets = require('../api/h5datasets.js');
+var H5Datasets = require('../api/h5datasets.js');
 var h5images = require('../api/h5images.js');
 
 describe('HDF5 datasets from browser', function() {
@@ -36,6 +36,7 @@ describe('HDF5 datasets from browser', function() {
             //group.close();
       file.close();
   }
+  let h5datasets=new H5Datasets();
 
   theServer=http.createServer(function (request, response) {
      try {
@@ -44,6 +45,12 @@ describe('HDF5 datasets from browser', function() {
        var resourcePath=path.normalize(requestUrl.pathname);
        if(resourcePath.startsWith("/make_dataset/")){
          h5datasets.makeDataset(resourcePath);
+         response.writeHead(200);
+         //response.write("hoe");
+             response.end("");
+       }
+       else if(resourcePath.startsWith("/read_dataset/")){
+         h5datasets.readDataset(resourcePath);
          response.writeHead(200);
          //response.write("hoe");
              response.end("");
@@ -92,7 +99,18 @@ describe('HDF5 datasets from browser', function() {
     client.start(done);
   });
 
-
+  it('Start, stop and restart a websocket server', function() {
+            console.dir("start wss");
+          var WebSocketServer = require('ws').Server
+            , wss = new WebSocketServer({ host: os.hostname(), port: 9900, path: '/make-dataset' });
+          wss.close(function(){
+            console.dir("start again");
+            wss = new WebSocketServer({ host: os.hostname(), port: 9900, path: '/make-dataset' });
+            wss.close();
+          });
+    
+  });
+  
   it('test datasets', function (done) {
     browser
       .url('http://'+os.hostname()+':8888/typedarrays.html')
@@ -100,7 +118,7 @@ describe('HDF5 datasets from browser', function() {
       .assert.title('HDF5 Interface')
       .waitForElementVisible('button[name=hdf5makedataset]', 1000)
       .click('button[name=hdf5makedataset]')
-      .pause(2000)
+      .pause(20000)
       .assert.containsText('#results', '[1.0, 2.0, 3.0, 5.0]')
       .end();
 
