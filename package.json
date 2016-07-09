@@ -13,7 +13,7 @@
   "dependencies" : {
     "co" : "4.6.0",
     "ws" : "1.1.1",
-    "hdf5" : "0.2.1"
+    "hdf5" : "file:../hdf5.node"
   },
   "devDependencies" : {
     "mocha" : "2.5.3",

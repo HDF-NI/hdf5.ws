@@ -1,0 +1,114 @@
+<html><head>
+<meta http-equiv="Content-Language" content="en">
+          <meta http-equiv="Content-Type" content="text/html" charset="utf-8">
+  <title>HDF5 Interface</title>
+  <link rel="shortcut icon" href="data:image/x-icon;," type="image/x-icon">
+  <script type="text/javascript" src="HDF5Interface.js"></script>
+  </head>
+<body>
+<div></output><script>
+function makeImage(event, element){
+   var dataItems = event.dataTransfer.items;
+   for (var i = 0; i < dataItems.length; i += 1) {
+    console.log(dataItems[i].kind+" "+dataItems[i].type);
+        var photoplate = document.createElement("CANVAS");
+        photoplate.id="photoplate";
+        var context = photoplate.getContext("2d");
+       var img = new Image();
+         img.onload = function () {
+             photoplate.width=img.width;
+             photoplate.height=img.height;
+             context.drawImage(img, 0, 0);
+            var hdf5Interface=new HDF5Interface();
+            hdf5Interface.createGroup("pmcservices/x-ray/plates");
+            var data=context.getImageData(0,0,img.width,img.height).data;
+            hdf5Interface.makeImage("pmcservices/x-ray/plates/nightwatch.jpg", data, {name: file.name, width: img.width, height: img.height, planes: 4, npals: 4, size: 4*img.width*img.height}, function(){
+                hdf5Interface.readImage("pmcservices/x-ray/plates/nightwatch.jpg", function(data, metaData){
+                    console.log(metaData);
+                    document.getElementById("results").appendChild(document.createTextNode(JSON.stringify(metaData)));
+                    var imageData=context.createImageData(metaData.width, metaData.height);
+                    var pos=0;
+                    // Got new data
+                   var dv = new DataView(data);
+                    for(var i=0;i<data.byteLength;i+=metaData.planes)
+                    {
+                            // set red, green, blue, and alpha:
+                            imageData.data[pos++] =dv.getUint8(i);
+                            imageData.data[pos++] = dv.getUint8(i+1);
+                            imageData.data[pos++] = dv.getUint8(i+2);
+                            (metaData.planes>3) ? imageData.data[pos++] =dv.getUint8(i+3) : imageData.data[pos++] = 255; // opaque alpha
+                    }
+                     // Display new data in browser!
+                    context.putImageData(imageData, 100, 100);
+            
+                });
+            });
+         }
+       var file=dataItems[i].getAsFile();
+       img.src = window.URL.createObjectURL(file);
+        while (element.firstChild) {
+          element.removeChild(element.firstChild);
+        }
+
+        var divEditor=document.createElement("DIV");
+        divEditor.id="editor";
+        divEditor.appendChild(photoplate);
+        element.appendChild(divEditor);
+
+    event.preventDefault();
+   }
+    event.preventDefault();
+}
+
+function doDragStart(event, element) {
+        document.getElementById("results").appendChild(document.createTextNode("dragStartHandler "));
+    console.log("dragStartHandler ");
+    console.log("dragStartHandler "+event.target.id);
+  event.target.style.opacity = '0.4';  // this / e.target is the source node.
+  event.dataTransfer.effectAllowed = "copyMove";
+  var dataURL = event.target.toDataURL();
+        console.log(element.id);
+        var fileNamee="nightwatch.jpg";
+  event.dataTransfer.setData( "DownloadURL", 'image/png:' +fileName+":"+dataURL);
+  event.dataTransfer.setData("text/x-moz-url", dataURL);
+  event.dataTransfer.setData("application/x-moz-file-promise-url", dataURL);
+  //event.dataTransfer.setData("application/x-moz-file-promise-dest-filename", fileName);
+  //ev.dataTransfer.mozSetDataAt('application/x-moz-file-promise',
+  //                new dataProvider(),
+  //                0, Components.interfaces.nsISupports);
+  event.preventDefault();
+}
+
+function doDragOver(e) {
+    e.preventDefault();
+};
+
+function dragHandler(ev, element) {
+    //console.log(ev.target.id);
+    //ev.dataTransfer.setData("text", ev.target.id);
+    //ev.preventDefault();
+}
+
+function dragEndHandler(ev, element) {
+    console.log("dragEndHandler "+ev.target.id);
+  ev.target.style.opacity = '1.0';  // this / e.target is the source node.
+  ev.preventDefault();
+}
+
+</script><div id="draggable" draggable="true" ondragstart="doDragStart(event, this)" ondragover="doDragOver(event)" ondrag="dragHandler(event, this)" ondragend="dragEndHandler(event, this)">
+    <canvas id="nwCanvas" width="550" height="381"></canvas>
+    <script>
+      var canvas = document.getElementById('nwCanvas');
+      var context = canvas.getContext('2d');
+      var imageObj = new Image();
+
+      imageObj.onload = function() {
+        context.drawImage(imageObj, 0, 0);
+      };
+      imageObj.src = 'nightwatch.jpg';
+    </script>
+    </div>
+<div id="droppable" dropzone="copy file:image/png" ondrop="makeImage(event, this)" style="height:381px;width:550px" ondragover="doDragOver(event)"> </div>
+<output id="results"/>
+</body>
+</html>

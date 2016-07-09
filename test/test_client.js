@@ -11,7 +11,7 @@ var Access = require('hdf5/lib/globals').Access;
 
 var h5 = require('../api/h5.js');
 var H5Datasets = require('../api/h5datasets.js');
-var h5images = require('../api/h5images.js');
+var H5Images = require('../api/h5images.js');
 
 describe('HDF5 datasets from browser', function() {
   var client = nightwatch.initClient({
@@ -37,6 +37,7 @@ describe('HDF5 datasets from browser', function() {
       file.close();
   }
   let h5datasets=new H5Datasets();
+  let h5images=new H5Images();
 
   theServer=http.createServer(function (request, response) {
      try {
@@ -57,6 +58,12 @@ describe('HDF5 datasets from browser', function() {
        }
        else if(resourcePath.startsWith("/make_image/")){
          h5images.makeImage(resourcePath);
+         response.writeHead(200);
+         //response.write("hoe");
+             response.end("");
+       }
+       else if(resourcePath.startsWith("/read_image/")){
+         h5images.readImage(resourcePath);
          response.writeHead(200);
          //response.write("hoe");
              response.end("");
@@ -120,6 +127,23 @@ describe('HDF5 datasets from browser', function() {
       .click('button[name=hdf5makedataset]')
       .pause(2000)
       .assert.containsText('#results', '[1.0, 2.0, 3.0, 5.0]')
+      .end();
+
+    client.start(done);
+  });
+
+  it('test images', function (done) {
+    browser
+      .url('http://'+os.hostname()+':8888/images.html')
+      .waitForElementVisible('#draggable', 20000)
+      .assert.title('HDF5 Interface')
+      .useCss()
+      .moveToElement('#draggable',  1,  1)
+      .mouseButtonDown(0)
+      .moveToElement('#droppable',  160,  1)
+      .mouseButtonUp(0)
+      .pause(30000)
+      .assert.containsText('#results', '{"name":"nightwatch.jpg","width":550,"height":381,"planes":4,"npals":4,"size":838200}')
       .end();
 
     client.start(done);
