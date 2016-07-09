@@ -118,7 +118,7 @@ describe('HDF5 datasets from browser', function() {
       .assert.title('HDF5 Interface')
       .waitForElementVisible('button[name=hdf5makedataset]', 1000)
       .click('button[name=hdf5makedataset]')
-      .pause(20000)
+      .pause(2000)
       .assert.containsText('#results', '[1.0, 2.0, 3.0, 5.0]')
       .end();
 

@@ -12,7 +12,7 @@ function makeDataSet(){
     var hdf5Interface=new HDF5Interface();
     hdf5Interface.createGroup("pmcservices/x-ray/refinement");
     hdf5Interface.makeDataset("pmcservices/x-ray/refinement/Matrix", data, function(){
-    hdf5Interface.readDataset("pmcservices/x-ray/refinement/Matrix", function(data){
+    hdf5Interface.readDataset("pmcservices/x-ray/refinement/Matrix", function(data, metaData){
         console.log(data);
         var dataStr="[";
         for(var i=0;i<data.length;i++){

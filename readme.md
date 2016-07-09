@@ -13,7 +13,7 @@ In the case of writing and immediately reading use the callback of makeDataset:
     var hdf5Interface=new HDF5Interface();
     hdf5Interface.createGroup("pmcservices/x-ray/refinement");
     hdf5Interface.makeDataset("pmcservices/x-ray/refinement/Matrix", data, function(){
-    hdf5Interface.readDataset("pmcservices/x-ray/refinement/Matrix", function(data){
+    hdf5Interface.readDataset("pmcservices/x-ray/refinement/Matrix", function(data, metaData){
         console.log(data);
         var dataStr="[";
         for(var i=0;i<data.length;i++){
@@ -25,6 +25,7 @@ In the case of writing and immediately reading use the callback of makeDataset:
     });
     });
 ```
+metaData will have rank, rows and if rank is 2, columns.
 
 [node-version-image]: https://img.shields.io/node/v/hdf5.svg
 [node-version-url]: https://nodejs.org/en/download/
