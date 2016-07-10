@@ -149,7 +149,7 @@ describe("testing api interface ",function(){
                         var pi =  new Promise((resolve2, reject2) => {
                           var WebSocket = require('ws');
                           var ws = new WebSocket('ws://'+os.hostname()+':9900/make-table', {protocolVersion: 13});
-                          ws.binaryType = "arraybuffer";
+                          ws.binaryType = "nodebuffer";
                           ws.on('open', function open() {
                             var tableModel=new ArrayBuffer(3);
                             var metaData=new ArrayBuffer(3);

@@ -36,8 +36,8 @@ describe('HDF5 datasets from browser', function() {
             //group.close();
       file.close();
   }
-  let h5datasets=new H5Datasets();
-  let h5images=new H5Images();
+  let h5datasets=new H5Datasets(9900);
+  let h5images=new H5Images(9900);
 
   theServer=http.createServer(function (request, response) {
      try {
