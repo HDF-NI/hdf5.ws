@@ -15,7 +15,8 @@ var HLType = require('hdf5/lib/globals').HLType;
 var Interlace = require('hdf5/lib/globals').Interlace;
 
 module.exports = class H5Tables { 
-    constructor (port) {
+    constructor (h5, port) {
+        this.h5=h5
         this.port=port
         this.status=false
     }
@@ -35,6 +36,9 @@ makeTable(path) {
         leaf = path;
     console.dir(stem);
     console.dir(leaf);
+    while(this.isPortTaken(this.port)){
+        
+    }
     const _this=this;
     //var p = yield new Promise((resolve, reject) => {
         var WebSocketServer = require('ws').Server
@@ -54,38 +58,36 @@ makeTable(path) {
               }
               else{
                   var tableModelBuffer=message;
-           console.dir(metaData.reconstructors[columnIndex]+" "+tableModelBuffer.length);
-console.dir(Object.prototype.toString.call(tableModelBuffer.buffer));
-   switch(metaData.reconstructors[columnIndex]){
-       case "Int32Array":
-           tableModel[tableModel.length]=new Int32Array(tableModelBuffer.buffer, tableModelBuffer.byteOffset, tableModelBuffer.byteLength / Int32Array.BYTES_PER_ELEMENT);
-           tableModel[tableModel.length-1].name=metaData.column_labels[columnIndex];
-           break;
-       case "Uint32Array":
-           tableModel[tableModel.length]=new Uint32Array(tableModelBuffer.buffer, tableModelBuffer.byteOffset, tableModelBuffer.byteLength / Uint32Array.BYTES_PER_ELEMENT);
-           tableModel[tableModel.length-1].name=metaData.column_labels[columnIndex];
-           break;
-       case "Float64Array":
-           tableModel[tableModel.length]=new Float64Array(tableModelBuffer.buffer, tableModelBuffer.byteOffset, tableModelBuffer.byteLength / Float64Array.BYTES_PER_ELEMENT);
-           tableModel[tableModel.length-1].name=metaData.column_labels[columnIndex];
-           break;
-       case "Float32Array":
-           tableModel[tableModel.length]=new Float32Array(tableModelBuffer.buffer, tableModelBuffer.byteOffset, tableModelBuffer.byteLength / Float32Array.BYTES_PER_ELEMENT);
-           tableModel[tableModel.length-1].name=metaData.column_labels[columnIndex];
-           break;
-       case "Uint8Array":
-           var splitStr=tableModelBuffer.toString().split(",");
-           var information = new Array(splitStr.length);
-           for(var i=0;i<splitStr.length;i++){
-               information[i]=splitStr[i];
-           }
-           tableModel[tableModel.length]=information;
-           tableModel[tableModel.length-1].name=metaData.column_labels[columnIndex];
-           break;
-        default:
-           console.dir(tableModel[tableModel.length-1].name+" unsupported type: "+tableModel[tableModel.length-1].length+" "+tableModelBuffer[0][propertyName].length);
-           break;
-   }
+               switch(metaData.reconstructors[columnIndex]){
+                   case "Int32Array":
+                       tableModel[tableModel.length]=new Int32Array(tableModelBuffer.buffer, tableModelBuffer.byteOffset, tableModelBuffer.byteLength / Int32Array.BYTES_PER_ELEMENT);
+                       tableModel[tableModel.length-1].name=metaData.column_labels[columnIndex];
+                       break;
+                   case "Uint32Array":
+                       tableModel[tableModel.length]=new Uint32Array(tableModelBuffer.buffer, tableModelBuffer.byteOffset, tableModelBuffer.byteLength / Uint32Array.BYTES_PER_ELEMENT);
+                       tableModel[tableModel.length-1].name=metaData.column_labels[columnIndex];
+                       break;
+                   case "Float64Array":
+                       tableModel[tableModel.length]=new Float64Array(tableModelBuffer.buffer, tableModelBuffer.byteOffset, tableModelBuffer.byteLength / Float64Array.BYTES_PER_ELEMENT);
+                       tableModel[tableModel.length-1].name=metaData.column_labels[columnIndex];
+                       break;
+                   case "Float32Array":
+                       tableModel[tableModel.length]=new Float32Array(tableModelBuffer.buffer, tableModelBuffer.byteOffset, tableModelBuffer.byteLength / Float32Array.BYTES_PER_ELEMENT);
+                       tableModel[tableModel.length-1].name=metaData.column_labels[columnIndex];
+                       break;
+                   case "Uint8Array":
+                       var splitStr=tableModelBuffer.toString().split(",");
+                       var information = new Array(splitStr.length);
+                       for(var i=0;i<splitStr.length;i++){
+                           information[i]=splitStr[i];
+                       }
+                       tableModel[tableModel.length]=information;
+                       tableModel[tableModel.length-1].name=metaData.column_labels[columnIndex];
+                       break;
+                    default:
+                       console.dir(tableModel[tableModel.length-1].name+" unsupported type: "+tableModel[tableModel.length-1].length+" "+tableModelBuffer[0][propertyName].length);
+                       break;
+               }
                 if(columnIndex===metaData.column_labels.length-1){
                 console.log('array?: %s', tableModel.length);
                 var file = new hdf5.File(global.currentH5Path, Access.ACC_RDWR);

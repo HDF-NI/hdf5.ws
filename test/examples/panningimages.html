@@ -1,0 +1,93 @@
+<html><head>
+<meta http-equiv="Content-Language" content="en">
+          <meta http-equiv="Content-Type" content="text/html" charset="utf-8">
+  <title>HDF5 Interface</title>
+  <link rel="shortcut icon" href="data:image/x-icon;," type="image/x-icon">
+  <script type="text/javascript" src="HDF5Interface.js"></script>
+  <style>
+/*position relative as a base for non-static elements*/
+#outerDiv{
+    position:relative;
+}
+
+/*every direct child positioned absolute*/
+#outerDiv > div {
+    position:absolute;
+}      
+  </style>
+  </head>
+<body>
+<div></output><script>
+
+function makeImage(){
+        var photoplate = document.getElementById("photoplate");
+        var context = photoplate.getContext("2d");
+       var img = new Image();
+         img.onload = function () {
+             photoplate.width=img.width;
+             photoplate.height=img.height;
+             context.drawImage(img, 0, 0);
+            var hdf5Interface=new HDF5Interface(9900);
+            hdf5Interface.createGroup("NASA/plates");
+            var data=context.getImageData(0,0,img.width,img.height).data;
+            hdf5Interface.makeImage("NASA/plates/734344main_g306_wide_large.jpg", data, {width: img.width, height: img.height, planes: 4, npals: 4, size: 4*img.width*img.height}, function(){
+                console.log("made");
+                var imageInfo=hdf5Interface.getImageInfo("NASA/plates/734344main_g306_wide_large.jpg");
+                console.log(imageInfo);
+                hdf5Interface.requestImageRegion("NASA/plates/734344main_g306_wide_large.jpg", {start: [(imageInfo.width-1)/2, (imageInfo.height-1)/2, 0], stride: [1, 1, 1], count: [400, 400, 4]}, function(data, metaData){
+                    console.log(metaData);
+                    document.getElementById("results").appendChild(document.createTextNode(JSON.stringify(metaData)));
+                    var viewportCanvas = document.getElementById('viewportCanvas');
+                    var viewPortContext = viewportCanvas.getContext("2d");
+                    var imageData=viewPortContext.createImageData(metaData.width, metaData.height);
+                    var pos=0;
+                    // Got new data
+                   var dv = new DataView(data);
+                    for(var i=0;i<data.byteLength;i+=metaData.planes)
+                    {
+                            // set red, green, blue, and alpha:
+                            imageData.data[pos++] =dv.getUint8(i);
+                            imageData.data[pos++] = dv.getUint8(i+1);
+                            imageData.data[pos++] = dv.getUint8(i+2);
+                            (metaData.planes>3) ? imageData.data[pos++] =dv.getUint8(i+3) : imageData.data[pos++] = 255; // opaque alpha
+                    }
+                     // Display new data in browser!
+                    viewPortContext.putImageData(imageData, 100, 100);
+            
+                });
+            });
+         }
+       //var file="http://www.nasa.gov/images/content/734344main_g306_wide_large.jpg";
+       img.src = "734344main_g306_wide_large.jpg";
+      //var canvas = document.getElementById('editor');
+        //var divEditor=document.createElement("DIV");
+        //divEditor.id="editor";
+        //divEditor.appendChild(photoplate);
+}
+
+window.onload = function() {
+     makeImage()
+}
+
+</script><div id="outerDiv">
+    <div style="z-index: 1">
+    <canvas id="photoplate" ></canvas>
+    </div>
+    <div style="z-index: 2">
+    <canvas id="viewportCanvas" width="400" height="400"></canvas>
+    <script>
+      /*var canvas = document.getElementById('nwCanvas');
+      var context = canvas.getContext('2d');
+      var imageObj = new Image();
+
+      imageObj.onload = function() {
+        context.drawImage(imageObj, 0, 0);
+      };*/
+      //imageObj.src = 'huge.jpg';
+    </script>
+    </div>
+    </div>
+    <div id="editor" />
+<output id="results"/>
+</body>
+</html>

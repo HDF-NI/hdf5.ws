@@ -1,7 +1,9 @@
 
 var nightwatch = require('nightwatch');
 var os = require("os");
+var net = require('net')
 var http = require('http')
+var Transform = require('stream').Transform
 var url = require('url')
 var fs = require('fs')
 var path = require('path')
@@ -9,7 +11,7 @@ var path = require('path')
 var hdf5 = require('hdf5').hdf5;
 var Access = require('hdf5/lib/globals').Access;
 
-var h5 = require('../api/h5.js');
+var H5 = require('../api/h5.js');
 var H5Datasets = require('../api/h5datasets.js');
 var H5Images = require('../api/h5images.js');
 
@@ -36,13 +38,14 @@ describe('HDF5 datasets from browser', function() {
             //group.close();
       file.close();
   }
-  let h5datasets=new H5Datasets(9900);
-  let h5images=new H5Images(9900);
+  let h5=new H5();
+  let h5datasets=new H5Datasets(h5, 9900);
+  let h5images=new H5Images(h5, 9900);
 
   theServer=http.createServer(function (request, response) {
      try {
        var requestUrl = url.parse(request.url);
-  
+
        var resourcePath=path.normalize(requestUrl.pathname);
        if(resourcePath.startsWith("/make_dataset/")){
          h5datasets.makeDataset(resourcePath);
@@ -56,14 +59,29 @@ describe('HDF5 datasets from browser', function() {
          //response.write("hoe");
              response.end("");
        }
+       else if(resourcePath.startsWith("/get_image_info/")){
+         response.writeHead(200);
+         response.write(h5images.getInfo(resourcePath));
+             response.end("");
+       }
        else if(resourcePath.startsWith("/make_image/")){
-         h5images.makeImage(resourcePath);
+         h5images.make(resourcePath);
          response.writeHead(200);
          //response.write("hoe");
              response.end("");
        }
        else if(resourcePath.startsWith("/read_image/")){
-         h5images.readImage(resourcePath);
+         h5images.read(resourcePath, function(metaData){
+           //response.write(JSON.stringify(metaData));
+         });
+         response.writeHead(200);
+         //response.write("hoe");
+             response.end("");
+       }
+       else if(resourcePath.startsWith("/read_image_region/")){
+         h5images.readRegion(resourcePath, function(metaData){
+           //response.write(JSON.stringify(metaData));
+         });
          response.writeHead(200);
          //response.write("hoe");
              response.end("");
@@ -73,6 +91,17 @@ describe('HDF5 datasets from browser', function() {
          response.writeHead(200);
          //response.write("hoe");
              response.end("");
+       }
+       else if(resourcePath.endsWith("734344main_g306_wide_large.jpg")){
+         var filePath = "/home/roger/Pictures/734344main_g306_wide_large.jpg";
+         response.writeHead(200)
+         var fileStream = fs.createReadStream(filePath)
+         fileStream.pipe(response)
+         fileStream.on('error',function(e) {
+             response.writeHead(404)     // assume the file doesn't exist
+             response.end()
+         })
+         
        }
        else{
          var filePath = __dirname+"/examples"+resourcePath;
@@ -89,11 +118,17 @@ describe('HDF5 datasets from browser', function() {
          })
        }
      } catch(e) {
+       console.dir("e: "+e);
        response.writeHead(500)
        response.end()     // end the response so browsers don't hang
        console.log(e.stack)
      }
   });
+  theServer.on('clientError', (err, socket) => {
+    console.dir("client err: "+err);
+    socket.end('HTTP/1.1 400 Bad Request\r\n\r\n');
+  });  
+  theServer.on('close', function () { console.dir("the server closed for some reason")});
   theServer.listen(8888);
 
   });
@@ -106,14 +141,29 @@ describe('HDF5 datasets from browser', function() {
     client.start(done);
   });
 
-  it('Start, stop and restart a websocket server', function() {
+  it('Start, stop and restart a websocket server', function(done) {
             console.dir("start wss");
           var WebSocketServer = require('ws').Server
             , wss = new WebSocketServer({ host: os.hostname(), port: 9900, path: '/make-dataset' });
           wss.close(function(){
             console.dir("start again");
             wss = new WebSocketServer({ host: os.hostname(), port: 9900, path: '/make-dataset' });
-            wss.close();
+            wss.close(function(){
+              let hit=false;
+              while(!hit){
+                let tester = net.createServer()
+                .once('error', function (err) {
+                  if (err.code != 'EADDRINUSE') hit=false
+                  hit=true
+                })
+                .once('listening', function() {
+                  tester.once('close', function() { hit=false })
+                  .close()
+                })
+                .listen(9900)
+              }
+            
+              done()});
           });
     
   });
@@ -135,15 +185,46 @@ describe('HDF5 datasets from browser', function() {
   it('test images', function (done) {
     browser
       .url('http://'+os.hostname()+':8888/images.html')
-      .waitForElementVisible('#draggable', 20000)
+      .waitForElementVisible('#nwCanvas', 2000)
       .assert.title('HDF5 Interface')
       .useCss()
-      .moveToElement('#draggable',  1,  1)
+      .moveToElement('#nwCanvas',  1,  1)
       .mouseButtonDown(0)
-      .moveToElement('#droppable',  160,  1)
+      .moveToElement('#droppable',  160,  560)
       .mouseButtonUp(0)
       .pause(30000)
       .assert.containsText('#results', '{"name":"nightwatch.jpg","width":550,"height":381,"planes":4,"npals":4,"size":838200}')
+      .end();
+
+    client.start(done);
+  });
+
+  it('test panning images', function (done) {
+    var url = 'http://www.nasa.gov/images/content/734344main_g306_wide_large.jpg'
+    /*http.request(url, function(response) {                                        
+      var data = new Transform();                                                    
+    
+      response.on('data', function(chunk) {
+        console.dir("chunk");
+        data.push(chunk);                                                         
+      });                                                                         
+    
+      response.on('end', function() {                                             
+        fs.writeFileSync('734344main_g306_wide_large.jpg', data.read());                               
+      });                                                                         
+    }).end();*/
+    
+    browser
+      .url('http://'+os.hostname()+':8888/panningimages.html')
+      .waitForElementVisible('#viewportCanvas', 20000)
+      .assert.title('HDF5 Interface')
+      .useCss()
+      .moveToElement('#viewportCanvas',  1,  1)
+      //.mouseButtonDown(0)
+      //.moveToElement('#editor',  160,  560)
+      //.mouseButtonUp(0)
+      .pause(60000)
+      .assert.containsText('#results', '{"name":"734344main_g306_wide_large.jpg","width":400,"height":400,"planes":4,"npals":4,"size":640000}')
       .end();
 
     client.start(done);

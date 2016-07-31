@@ -8,7 +8,8 @@ var CreationOrder = require('hdf5/lib/globals').CreationOrder;
 var H5Type = require('hdf5/lib/globals.js').H5Type;
 
 module.exports = class H5Datasets { 
-    constructor (port) {
+    constructor (h5, port) {
+        this.h5=h5
         this.port=port
         this.status=false
     }
@@ -31,6 +32,9 @@ module.exports = class H5Datasets {
         console.dir(stem);
         console.dir(leaf);
         this.status=true
+        while(this.isPortTaken(this.port)){
+            
+        }
         const _this=this
         //var p = yield new Promise((resolve, reject) => {
             var WebSocketServer = require('ws').Server
@@ -215,6 +219,9 @@ module.exports = class H5Datasets {
         console.dir(stem);
         console.dir(leaf);
         this.status=true
+        while(this.isPortTaken(this.port)){
+            
+        }
         const _this=this
         //var p = yield new Promise((resolve, reject) => {
             var WebSocketServer = require('ws').Server

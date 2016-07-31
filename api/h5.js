@@ -11,8 +11,14 @@ var H5OType = require('hdf5/lib/globals').H5OType;
 var HLType = require('hdf5/lib/globals').HLType;
 var Interlace = require('hdf5/lib/globals').Interlace;
 
-module.exports.createH5 = function * createH5(path) {
-    if ('POST' != this.method) return yield next;
+module.exports = class H5 { 
+    constructor () {
+        //this.port=port
+        this.status=false
+        this.compression=0
+    }
+        
+createH5(path) {
     console.dir("got to create h5");
     var index=path.lastIndexOf("/");
     var stem = "";
@@ -31,7 +37,7 @@ module.exports.createH5 = function * createH5(path) {
     file.close();
 }
 
-module.exports.createGroup = function createGroup(path) {
+createGroup(path) {
     path=decodeURIComponent(path);
     if(!path.startsWith("/create_group/")) return;
     console.dir("got to make create group");
@@ -42,4 +48,18 @@ module.exports.createGroup = function createGroup(path) {
     group.close();
     file.close();
     return;
+}
+
+setCompression(path) {
+    path=decodeURIComponent(path);
+    if(!path.startsWith("/set_compression/")) return;
+    console.dir("got to make create group");
+    let property=JSON.parse(path.substring(17));
+    
+    this.compression=property.compression
+    
+    return;
+}
+
+
 }
