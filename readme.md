@@ -31,7 +31,6 @@ It is now possible to write a whole image to the h5, read a whole image or read 
 Will have to explore the cross over point for applying compression on the websocket transfer.
 
 The following works with the 2d context of a canvas to display a 400x400 rectangle from a large image:
-
 ```javascript
                 var imageInfo=hdf5Interface.getImageInfo("NASA/plates/734344main_g306_wide_large.jpg");
                 console.log(imageInfo);
