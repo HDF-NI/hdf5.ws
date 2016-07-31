@@ -30,31 +30,7 @@ metaData will have rank, rows and if rank is 2, columns.
 It is now possible to write a whole image to the h5, read a whole image or read just a region of an image. 
 Will have to explore the cross over point for applying compression on the websocket transfer.
 
-```javascript
-                var imageInfo=hdf5Interface.getImageInfo("NASA/plates/734344main_g306_wide_large.jpg");
-                console.log(imageInfo);
-                hdf5Interface.requestImageRegion("NASA/plates/734344main_g306_wide_large.jpg", {start: [(imageInfo.width-1)/2, (imageInfo.height-1)/2, 0], stride: [1, 1, 1], count: [400, 400, 4]}, function(data, metaData){
-                    console.log(metaData);
-                    document.getElementById("results").appendChild(document.createTextNode(JSON.stringify(metaData)));
-                    var viewportCanvas = document.getElementById('viewportCanvas');
-                    var viewPortContext = viewportCanvas.getContext("2d");
-                    var imageData=viewPortContext.createImageData(metaData.width, metaData.height);
-                    var pos=0;
-                    // Got new data
-                   var dv = new DataView(data);
-                    for(var i=0;i<data.byteLength;i+=metaData.planes)
-                    {
-                            // set red, green, blue, and alpha:
-                            imageData.data[pos++] =dv.getUint8(i);
-                            imageData.data[pos++] = dv.getUint8(i+1);
-                            imageData.data[pos++] = dv.getUint8(i+2);
-                            (metaData.planes>3) ? imageData.data[pos++] =dv.getUint8(i+3) : imageData.data[pos++] = 255; // opaque alpha
-                    }
-                     // Display new data in browser!
-                    viewPortContext.putImageData(imageData, 100, 100);
-            
-                });
-```
+
 
 [node-version-image]: https://img.shields.io/node/v/hdf5.svg
 [node-version-url]: https://nodejs.org/en/download/
