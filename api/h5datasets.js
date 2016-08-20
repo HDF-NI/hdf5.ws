@@ -38,7 +38,7 @@ module.exports = class H5Datasets {
         const _this=this
         //var p = yield new Promise((resolve, reject) => {
             var WebSocketServer = require('ws').Server
-              , wss = new WebSocketServer({ host: os.hostname(), port: _this.port, path: '/make-dataset' });
+              , wss = new WebSocketServer({ host: os.hostname(), port: _this.port, path: '/make-dataset', perMessageDeflate: true });
             
             wss.on('connection', function connection(ws) {
                 ws.binaryType = "nodebuffer";
@@ -176,7 +176,7 @@ module.exports = class H5Datasets {
             }
             const _this=this
                 var WebSocketServer = require('ws').Server
-                  , wss = new WebSocketServer({ host: os.hostname(), port: _this.port, path: '/read-dataset' });
+                  , wss = new WebSocketServer({ host: os.hostname(), port: _this.port, path: '/read-dataset', perMessageDeflate: true});
                 
                 wss.on('connection', function connection(ws) {
                     ws.binaryType = "nodebuffer";
@@ -225,7 +225,7 @@ module.exports = class H5Datasets {
         const _this=this
         //var p = yield new Promise((resolve, reject) => {
             var WebSocketServer = require('ws').Server
-              , wss = new WebSocketServer({ host: os.hostname(), port: _this.port, path: '/make-text' });
+              , wss = new WebSocketServer({ host: os.hostname(), port: _this.port, path: '/make-text', perMessageDeflate: true });
             
             wss.on('connection', function connection(ws) {
                 ws.binaryType = "nodebuffer";
@@ -285,7 +285,7 @@ module.exports = class H5Datasets {
             }
             const _this=this
                 var WebSocketServer = require('ws').Server
-                  , wss = new WebSocketServer({ host: os.hostname(), port: _this.port, path: '/read-text' });
+                  , wss = new WebSocketServer({ host: os.hostname(), port: _this.port, path: '/read-text', perMessageDeflate: true });
                 
                 wss.on('connection', function connection(ws) {
                     ws.binaryType = "nodebuffer";

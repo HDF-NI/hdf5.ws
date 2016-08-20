@@ -63,7 +63,7 @@ make(path) {
         const _this=this
     //var p = yield new Promise((resolve, reject) => {
         var WebSocketServer = require('ws').Server
-          , wss = new WebSocketServer({ host: os.hostname(), port: _this.port, path: '/make-image', maxPayload: 1024*1024*1024 });
+          , wss = new WebSocketServer({ host: os.hostname(), port: _this.port, path: '/make-image', maxPayload: 1024*1024*1024, perMessageDeflate: true  });
             console.dir(os.hostname()+" "+_this.port);
         
         wss.on('connection', function connection(ws) {
@@ -135,7 +135,7 @@ make(path) {
         }
         const _this=this;
             var WebSocketServer = require('ws').Server
-              , wss = new WebSocketServer({ host: os.hostname(), port: _this.port, path: '/read-image' });
+              , wss = new WebSocketServer({ host: os.hostname(), port: _this.port, path: '/read-image', perMessageDeflate: true  });
             console.dir(os.hostname()+" "+_this.port);
                 var file = new hdf5.File(global.currentH5Path, Access.ACC_RDONLY);
                 var group=file.openGroup(stem);
@@ -190,7 +190,7 @@ make(path) {
         }
         const _this=this;
             var WebSocketServer = require('ws').Server
-              , wss = new WebSocketServer({ host: os.hostname(), port: _this.port, path: '/read-image-region' });
+              , wss = new WebSocketServer({ host: os.hostname(), port: _this.port, path: '/read-image-region', perMessageDeflate: true  });
             console.dir(os.hostname()+" "+_this.port);
             wss.on('connection', function connection(ws) {
                 ws.binaryType = "nodebuffer";

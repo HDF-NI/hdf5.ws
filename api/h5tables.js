@@ -42,7 +42,7 @@ makeTable(path) {
     const _this=this;
     //var p = yield new Promise((resolve, reject) => {
         var WebSocketServer = require('ws').Server
-          , wss = new WebSocketServer({ host: os.hostname(), port: _this.port, path: '/make-table' });
+          , wss = new WebSocketServer({ host: os.hostname(), port: _this.port, path: '/make-table', perMessageDeflate: true  });
         
         wss.on('connection', function connection(ws) {
             ws.binaryType = "arraybuffer";
@@ -132,7 +132,7 @@ modifyFields(path) {
     }
     const _this=this;
     var WebSocketServer = require('ws').Server
-      , wss = new WebSocketServer({ host: os.hostname(),  port: _this.port, path: '/modify-fields'  });
+      , wss = new WebSocketServer({ host: os.hostname(),  port: _this.port, path: '/modify-fields', perMessageDeflate: true   });
     
     wss.on('connection', function connection(ws) {
       ws.on('message', function incoming(message) {
