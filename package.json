@@ -12,14 +12,14 @@
   },
   "dependencies" : {
     "co" : "4.6.0",
-    "ws" : "1.1.1",
+    "ws" : "websockets/ws",
     "hdf5" : "file:../hdf5.node"
   },
   "devDependencies" : {
-    "mocha" : "2.5.3",
-    "co-mocha" : "1.1.2",
-    "should" : "9.0.2",
-    "nightwatch" : "0.9.5"
+    "mocha" : "3.2.0",
+    "co-mocha" : "1.1.3",
+    "should" : "11.1.1",
+    "nightwatch" : "0.9.11"
   },
   "contributors" : [ "Roger I Martin <mathmldashx@yahoo.com> (https://github.com/rimmartin/)" ],
   "license" : "MIT",

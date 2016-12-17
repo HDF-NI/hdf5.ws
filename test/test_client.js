@@ -22,7 +22,7 @@ describe('HDF5 datasets from browser', function() {
 
   var browser = client.api();
 
-  this.timeout(99999999);
+  //this.timeout(99999999);
   var theServer;
   global.currentH5Path="newone.h5";
 
@@ -43,10 +43,13 @@ describe('HDF5 datasets from browser', function() {
   let h5images=new H5Images(h5, 9900);
 
   theServer=http.createServer(function (request, response) {
+           console.dir("req res ");
      try {
        var requestUrl = url.parse(request.url);
+           console.dir("requestUrl "+requestUrl);
 
        var resourcePath=path.normalize(requestUrl.pathname);
+           console.dir("resourcePath "+resourcePath);
        if(resourcePath.startsWith("/make_dataset/")){
          h5datasets.makeDataset(resourcePath);
          response.writeHead(200);
@@ -104,6 +107,7 @@ describe('HDF5 datasets from browser', function() {
          
        }
        else{
+           console.dir("resourcePath "+resourcePath);
          var filePath = __dirname+"/examples"+resourcePath;
          console.dir("filePath "+filePath);
          if(filePath.endsWith(".js")){
@@ -141,6 +145,13 @@ describe('HDF5 datasets from browser', function() {
     client.start(done);
   });
 
+
+    it("should be 1.10.0", function(done) {
+        var version=hdf5.getLibVersion();
+        console.dir(version);
+        client.start(done);
+    });
+
   it('Start, stop and restart a websocket server', function(done) {
             console.dir("start wss");
           var WebSocketServer = require('ws').Server
@@ -168,7 +179,9 @@ describe('HDF5 datasets from browser', function() {
     
   });
   
-  it('test datasets', function (done) {
+  it('test datasets', function*(done) {
+                 console.dir("datasets "+os.hostname());
+
     browser
       .url('http://'+os.hostname()+':8888/typedarrays.html')
       .waitForElementVisible('body', 20000)
@@ -241,7 +254,8 @@ describe('HDF5 datasets from browser', function() {
       console.log('afterAll')
     });
 
-    client.start(done);
+    //client.start(done);
+                 console.dir("theServer close "+os.hostname());
     theServer.close();
   });
 

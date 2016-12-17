@@ -187,8 +187,20 @@ module.exports = class H5Datasets {
                     });
                     var file = new hdf5.File(global.currentH5Path, Access.ACC_RDONLY);
                     var group=file.openGroup(stem);
+                    console.log('read from h5');
                     const readBuffer=h5lt.readDataset(group.id, leaf);
-                    ws.send(JSON.stringify({reconstructor: readBuffer.constructor.name, rank: readBuffer.rank, rows: readBuffer.rows}));
+                    switch(readBuffer.rank){
+                        case 3:
+                            ws.send(JSON.stringify({reconstructor: readBuffer.constructor.name, rank: readBuffer.rank, rows: readBuffer.rows, columns: readBuffer.columns, sections: readBuffer.sections}));
+                            break;
+                        case 2:
+                            ws.send(JSON.stringify({reconstructor: readBuffer.constructor.name, rank: readBuffer.rank, rows: readBuffer.rows, columns: readBuffer.columns}));
+                            break;
+                        default:
+                            ws.send(JSON.stringify({reconstructor: readBuffer.constructor.name, rank: readBuffer.rank, rows: readBuffer.rows}));
+                            break;
+                    }
+                    console.log('send to client');
                     ws.send(readBuffer, { binary: true, mask: false });
                     //ws.end("");
     
