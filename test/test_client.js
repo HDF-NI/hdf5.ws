@@ -179,7 +179,7 @@ describe('HDF5 datasets from browser', function() {
     
   });
   
-  it('test datasets', function*(done) {
+  it('test datasets', function(done) {
                  console.dir("datasets "+os.hostname());
 
     browser

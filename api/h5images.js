@@ -60,6 +60,7 @@ make(path) {
             while(this.isPortTaken(this.port)){
                 
             }
+    console.dir("port available");
         const _this=this
     //var p = yield new Promise((resolve, reject) => {
         var WebSocketServer = require('ws').Server
@@ -75,11 +76,8 @@ make(path) {
                   metaData=JSON.parse(message);
               }
               else{
-                    var imageBuffer=message;//BSON.deserialize(message, {promoteBuffers: false});
-                    console.dir(imageBuffer.constructor.name);
-                    //imageBuffer.length=metaData.width*metaData.height*metaData.planes;
-                    console.dir(metaData);
                     var image=message;//Buffer.from(imageBuffer);
+                    //console.dir(image.constructor.name);
                     image.width=metaData.width;
                     image.height=metaData.height;
                     image.planes=metaData.planes;
