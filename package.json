@@ -16,10 +16,10 @@
     "hdf5" : "HDF-NI/hdf5.node"
   },
   "devDependencies" : {
-    "mocha" : "3.2.0",
+    "mocha" : "3.3.0",
     "co-mocha" : "1.2.0",
-    "should" : "11.2.0",
-    "nightwatch" : "0.9.12"
+    "should" : "11.2.1",
+    "nightwatch" : "0.9.15"
   },
   "contributors" : [ "Roger I Martin <mathmldashx@yahoo.com> (https://github.com/rimmartin/)" ],
   "license" : "MIT",

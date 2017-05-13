@@ -5,3 +5,5 @@ build
 /nbproject/private/
 /lib/binding/
 .c9/
+*.sh
+*.h5

@@ -22,16 +22,7 @@ describe('HDF5 datasets from browser', function() {
 
   var browser = client.api();
 
-  //this.timeout(99999999);
-  var theServer;
   global.currentH5Path="newone.h5";
-
-  before(function() {
-
-    browser.perform(function() {
-      console.log('beforeAll')
-    });
-
   if(global.currentH5Path.length>0 && !fs.existsSync(global.currentH5Path)){
       var file = new hdf5.File(global.currentH5Path, Access.ACC_TRUNC);
             //const group=file.createGroup('pmcservices/x-ray/refinement');
@@ -42,7 +33,7 @@ describe('HDF5 datasets from browser', function() {
   let h5datasets=new H5Datasets(h5, 9900);
   let h5images=new H5Images(h5, 9900);
 
-  theServer=http.createServer(function (request, response) {
+  var theServer=http.createServer(function (request, response) {
            console.dir("req res ");
      try {
        var requestUrl = url.parse(request.url);
@@ -135,7 +126,15 @@ describe('HDF5 datasets from browser', function() {
   theServer.on('close', function () { console.dir("the server closed for some reason")});
   theServer.listen(8888);
 
+  before(function() {
+
+    browser.perform(function() {
+      console.log('beforeAll')
+    });
+
+
   });
+  this.timeout(99999999);
 
   beforeEach(function(done) {
     browser.perform(function() {
@@ -188,7 +187,7 @@ describe('HDF5 datasets from browser', function() {
       .assert.title('HDF5 Interface')
       .waitForElementVisible('button[name=hdf5makedataset]', 1000)
       .click('button[name=hdf5makedataset]')
-      .pause(2000)
+      .pause(3000)
       .assert.containsText('#results', '[1.0, 2.0, 3.0, 5.0]')
       .end();
 
@@ -203,7 +202,8 @@ describe('HDF5 datasets from browser', function() {
       .useCss()
       .moveToElement('#nwCanvas',  1,  1)
       .mouseButtonDown(0)
-      .moveToElement('#droppable',  160,  560)
+      .moveToElement('#droppable',  160,  230)
+      .pause(1000)
       .mouseButtonUp(0)
       .pause(30000)
       .assert.containsText('#results', '{"name":"nightwatch.jpg","width":550,"height":381,"planes":4,"npals":4,"size":838200}')
