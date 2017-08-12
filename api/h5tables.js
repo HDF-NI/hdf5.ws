@@ -41,6 +41,7 @@ makeTable(path) {
     }
     const _this=this;
     //var p = yield new Promise((resolve, reject) => {
+    console.dir("hostname "+os.hostname());
         var WebSocketServer = require('ws').Server
           , wss = new WebSocketServer({ host: os.hostname(), port: _this.port, path: '/make-table', perMessageDeflate: true  });
         

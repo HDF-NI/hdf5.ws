@@ -1,30 +1,32 @@
 {
-  "name" : "hdf5ws",
-  "version" : "0.0.1",
-  "description" : "Web socket API for hdf5.node",
-  "main" : "./index.js",
-  "repository" : {
-    "type" : "git",
-    "url" : "https://github.com/HDF-NI/hdf5.ws.git"
+  "name": "hdf5ws",
+  "version": "0.0.1",
+  "description": "Web socket API for hdf5.node",
+  "main": "./index.js",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/HDF-NI/hdf5.ws.git"
   },
   "engines": {
     "node": ">=4.2.1"
   },
-  "dependencies" : {
-    "co" : "4.6.0",
-    "ws" : "websockets/ws",
-    "hdf5" : "HDF-NI/hdf5.node"
+  "dependencies": {
+    "co": "4.6.0",
+    "ws": "websockets/ws",
+    "hdf5": "HDF-NI/hdf5.node"
   },
-  "devDependencies" : {
-    "mocha" : "3.3.0",
-    "co-mocha" : "1.2.0",
-    "should" : "11.2.1",
-    "nightwatch" : "0.9.15"
+  "devDependencies": {
+    "mocha": "3.5.0",
+    "co-mocha": "1.2.0",
+    "should": "11.2.1",
+    "nightwatch": "0.9.16"
   },
-  "contributors" : [ "Roger I Martin <mathmldashx@yahoo.com> (https://github.com/rimmartin/)" ],
-  "license" : "MIT",
-  "keywords" : [ ],
-  "bugs" : {
-    "url" : "https://github.com/HDF-NI/hdf5.ws/issues"
+  "contributors": [
+    "Roger I Martin <mathmldashx@yahoo.com> (https://github.com/rimmartin/)"
+  ],
+  "license": "MIT",
+  "keywords": [],
+  "bugs": {
+    "url": "https://github.com/HDF-NI/hdf5.ws/issues"
   }
 }

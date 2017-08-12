@@ -66,7 +66,10 @@ make(path) {
         var WebSocketServer = require('ws').Server
           , wss = new WebSocketServer({ host: os.hostname(), port: _this.port, path: '/make-image', maxPayload: 1024*1024*1024, perMessageDeflate: true  });
             console.dir(os.hostname()+" "+_this.port);
-        
+        wss.on("error", error => {
+            console.log("The server encountered an error! ");
+            while(_this.isPortTaken(_this.port)){};
+            });
         wss.on('connection', function connection(ws) {
             ws.binaryType = "nodebuffer";
             var metaData;
