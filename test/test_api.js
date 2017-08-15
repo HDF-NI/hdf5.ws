@@ -7,8 +7,6 @@ var fs = require('fs');
 var http = require('http');
 var util = require('util');
 var WebSocket = require('ws');
-var bson = require("bson");
-var BSON = new bson.BSONPure.BSON();
 
 const Access  = require('hdf5/lib/globals.js').Access;
 
@@ -56,7 +54,7 @@ describe("testing api interface ",function(){
             console.dir(err.message);
             }
         });
-        it("create a group", function*(done){
+        it("create a group", function(done){
             try
             {
               var options = {
@@ -86,6 +84,7 @@ describe("testing api interface ",function(){
                 
                 req.end();
               console.dir('end');
+              done();
             }
             catch (err) {
             console.dir(err.message);
@@ -177,7 +176,7 @@ describe("testing api interface ",function(){
                             var ab=new Array(2);
                             ab[0]=metaData;
                             ab[1]=tableModel;
-                            ws.send(BSON.serialize(ab, true, false, true), { binary: true, mask: true });
+                            ws.send(ab, { binary: true, mask: true });
                             ws.close();
                           });
                           ws.on('close', function close() {
@@ -249,7 +248,7 @@ describe("testing api interface ",function(){
                             buffer.rows=4;
                             buffer.columns=4;
                             buffer.length=16;
-                            ws.send(BSON.serialize(buffer, true, true, true), { binary: true, mask: false });
+                            ws.send(buffer, { binary: true, mask: false });
                             ws.close();
                           });
                           ws.on('close', function close() {
@@ -306,12 +305,12 @@ describe("testing api interface ",function(){
                             var file2 = new hdf5.File('./test/examples/hdf5.h5', Access.ACC_RDONLY);
                             var image = h5im.readImage(file2.id, 'hdf_logo.jpg');
                             console.dir(image.constructor.name);
-for(var key in image){
-    if (image.hasOwnProperty(key)) {
-      console.dir(key);
-    }
-   }                            
-                            ws.send(BSON.serialize(image, true, true, true), { binary: true, mask: true });
+                            for(var key in image){
+                              if (image.hasOwnProperty(key)) {
+                                console.dir(key);
+                              }
+                             }                            
+                            ws.send(image, { binary: true, mask: true });
                             ws.close();
                             file2.close();
                           });

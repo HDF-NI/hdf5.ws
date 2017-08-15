@@ -17,7 +17,13 @@ var H5Images = require('../api/h5images.js');
 
 describe('HDF5 datasets from browser', function() {
   var client = nightwatch.initClient({
-    silent : true
+    silent : true,
+    "desiredCapabilities": {
+        "browserName": "chrome",
+        "javascriptEnabled": true,
+        "acceptSslCerts": true,
+        "xpinstall.signatures.required" : false
+      }
   });
 
   var browser = client.api();
@@ -202,6 +208,7 @@ describe('HDF5 datasets from browser', function() {
       .useCss()
       .moveToElement('#nwCanvas',  1,  1)
       .mouseButtonDown(0)
+      .pause(1000)
       .moveToElement('#droppable',  160,  230)
       .pause(1000)
       .mouseButtonUp(0)
