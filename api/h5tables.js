@@ -23,7 +23,6 @@ module.exports = class H5Tables {
         
 makeTable(path) {
     path=decodeURIComponent(path);
-    console.dir("got to make2 table");
     var index=path.lastIndexOf("/");
     var stem = "";
     var leaf = "";
@@ -34,14 +33,13 @@ makeTable(path) {
     }
     else
         leaf = path;
-    console.dir(stem);
-    console.dir(leaf);
+    //console.dir(stem);
+    //console.dir(leaf);
     while(this.isPortTaken(this.port)){
         
     }
     const _this=this;
     //var p = yield new Promise((resolve, reject) => {
-    console.dir("hostname "+os.hostname());
         var WebSocketServer = require('ws').Server
           , wss = new WebSocketServer({ host: os.hostname(), port: _this.port, path: '/make-table', perMessageDeflate: true  });
         
@@ -50,9 +48,8 @@ makeTable(path) {
             var metaData;
             var columnIndex=0;
             var tableModel=Array();
-          ws.on('message', function incoming(message, flags) {
-              if(!flags.binary){
-                  console.log('received: %s', message);
+          ws.on('message', function incoming(message) {
+              if(typeof message === 'string'){
                   metaData=JSON.parse(message);
                   columnIndex=0;
                   tableModel=Array();
@@ -86,11 +83,11 @@ makeTable(path) {
                        tableModel[tableModel.length-1].name=metaData.column_labels[columnIndex];
                        break;
                     default:
-                       console.dir(tableModel[tableModel.length-1].name+" unsupported type: "+tableModel[tableModel.length-1].length+" "+tableModelBuffer[0][propertyName].length);
+                       //console.dir(tableModel[tableModel.length-1].name+" unsupported type: "+tableModel[tableModel.length-1].length+" "+tableModelBuffer[0][propertyName].length);
                        break;
                }
                 if(columnIndex===metaData.column_labels.length-1){
-                console.log('array?: %s', tableModel.length);
+                //console.log('array?: %s', tableModel.length);
                 var file = new hdf5.File(global.currentH5Path, Access.ACC_RDWR);
                 var group=file.openGroup(stem);
                     h5tb.makeTable(group.id, leaf, tableModel);
@@ -101,7 +98,7 @@ makeTable(path) {
               }
           });
             ws.on('close', function close() {
-              console.log('disconnected');
+              //console.log('disconnected');
                 wss.close();
               //resolve("");
             });
@@ -115,7 +112,6 @@ makeTable(path) {
 
 modifyFields(path) {
     path=decodeURIComponent(path);
-    console.dir("got to modify fields");
     var index=path.lastIndexOf("/");
     var stem = "";
     var leaf = "";
@@ -126,8 +122,8 @@ modifyFields(path) {
     }
     else
         leaf = path;
-    console.dir(stem);
-    console.dir(leaf);
+    //console.dir(stem);
+    //console.dir(leaf);
     while(this.isPortTaken(this.port)){
         
     }
@@ -137,7 +133,7 @@ modifyFields(path) {
     
     wss.on('connection', function connection(ws) {
       ws.on('message', function incoming(message) {
-        console.log('received: %s', message);
+        //console.log('received: %s', message);
       });
     
       ws.send('something');

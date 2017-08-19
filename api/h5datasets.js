@@ -17,7 +17,6 @@ module.exports = class H5Datasets {
     makeDataset(path) {
         path=decodeURIComponent(path);
         if(!path.startsWith("/make_dataset/")) return;
-        console.dir("got to make dataset");
         path=path.substring(14);
         var index=path.lastIndexOf("/");
         var stem = "";
@@ -29,8 +28,8 @@ module.exports = class H5Datasets {
         }
         else
             leaf = path;
-        console.dir(stem);
-        console.dir(leaf);
+        //console.dir(stem);
+        //console.dir(leaf);
         this.status=true
         while(this.isPortTaken(this.port)){
             
@@ -43,12 +42,12 @@ module.exports = class H5Datasets {
             wss.on('connection', function connection(ws) {
                 ws.binaryType = "nodebuffer";
                 var metaData;
-              ws.on('message', function incoming(message, flags) {
-                  if(!flags.binary){
+              ws.on('message', function incoming(message) {
+                  
+                  if(typeof message === 'string'){
                       metaData=JSON.parse(message);
                   }
                   else{
-                      //console.dir(message);
                         var datasetBuffer=message;//BSON.deserialize(message, {promoteBuffers: true}, true);
                         //datasetBuffer.length=metaData.rows;
                         //if(metaData.rank>=2)metaData.length*=metaData.columns;
@@ -142,7 +141,6 @@ module.exports = class H5Datasets {
                     }
               });
                 ws.on('close', function close() {
-                  console.log('disconnected');
                   //resolve("");
                   wss.close(function(){_this.status=false});
                 });
@@ -157,7 +155,6 @@ module.exports = class H5Datasets {
         readDataset(path) {
             path=decodeURIComponent(path);
             if(!path.startsWith("/read_dataset/")) return;
-            console.dir("got to read dataset");
             path=path.substring(14);
             var index=path.lastIndexOf("/");
             var stem = "";
@@ -169,8 +166,8 @@ module.exports = class H5Datasets {
             }
             else
                 leaf = path;
-            console.dir(stem);
-            console.dir(leaf);
+            //console.dir(stem);
+            //console.dir(leaf);
             while(this.isPortTaken(this.port)){
                 
             }
@@ -181,13 +178,11 @@ module.exports = class H5Datasets {
                 wss.on('connection', function connection(ws) {
                     ws.binaryType = "nodebuffer";
                     ws.on('close', function close() {
-                      console.log('disconnected');
                       //resolve("");
                       wss.close(function(){_this.status=false});
                     });
                     var file = new hdf5.File(global.currentH5Path, Access.ACC_RDONLY);
                     var group=file.openGroup(stem);
-                    console.log('read from h5');
                     const readBuffer=h5lt.readDataset(group.id, leaf);
                     switch(readBuffer.rank){
                         case 3:
@@ -200,7 +195,6 @@ module.exports = class H5Datasets {
                             ws.send(JSON.stringify({reconstructor: readBuffer.constructor.name, rank: readBuffer.rank, rows: readBuffer.rows}));
                             break;
                     }
-                    console.log('send to client');
                     ws.send(readBuffer, { binary: true, mask: false });
                     //ws.end("");
     
@@ -216,7 +210,6 @@ module.exports = class H5Datasets {
     makeText(path) {
         path=decodeURIComponent(path);
         if(!path.startsWith("/make_text/")) return;
-        console.dir("got to make text");
         path=path.substring(11);
         var index=path.lastIndexOf("/");
         var stem = "";
@@ -228,8 +221,8 @@ module.exports = class H5Datasets {
         }
         else
             leaf = path;
-        console.dir(stem);
-        console.dir(leaf);
+        //console.dir(stem);
+        //console.dir(leaf);
         this.status=true
         while(this.isPortTaken(this.port)){
             
@@ -242,12 +235,11 @@ module.exports = class H5Datasets {
             wss.on('connection', function connection(ws) {
                 ws.binaryType = "nodebuffer";
                 var metaData;
-              ws.on('message', function incoming(message, flags) {
-                  if(!flags.binary){
+              ws.on('message', function incoming(message) {
+                  if(typeof message === 'string'){
                       metaData=JSON.parse(message);
                   }
                   else{
-                      //console.dir(message);
 
                         var file = new hdf5.File(global.currentH5Path, Access.ACC_RDWR);
                         var group=file.openGroup(stem);
@@ -263,7 +255,6 @@ module.exports = class H5Datasets {
                     }
               });
                 ws.on('close', function close() {
-                  console.log('disconnected');
                   //resolve("");
                   wss.close(function(){_this.status=false});
                 });
@@ -278,7 +269,6 @@ module.exports = class H5Datasets {
         readText(path) {
             path=decodeURIComponent(path);
             if(!path.startsWith("/read_text/")) return;
-            console.dir("got to read text");
             path=path.substring(11);
             var index=path.lastIndexOf("/");
             var stem = "";
@@ -290,8 +280,8 @@ module.exports = class H5Datasets {
             }
             else
                 leaf = path;
-            console.dir(stem);
-            console.dir(leaf);
+            //console.dir(stem);
+            //console.dir(leaf);
             while(this.isPortTaken(this.port)){
                 
             }
@@ -302,7 +292,6 @@ module.exports = class H5Datasets {
                 wss.on('connection', function connection(ws) {
                     ws.binaryType = "nodebuffer";
                     ws.on('close', function close() {
-                      console.log('disconnected');
                       //resolve("");
                       wss.close(function(){_this.status=false});
                     });

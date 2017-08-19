@@ -26,6 +26,7 @@ describe('HDF5 datasets from browser', function() {
       }
   });
 
+//require('chromedriver-html5-dragdrop')(client/* , waitMillisBetweenSteps */);
   var browser = client.api();
 
   global.currentH5Path="newone.h5";
@@ -203,16 +204,17 @@ describe('HDF5 datasets from browser', function() {
   it('test images', function (done) {
     browser
       .url('http://'+os.hostname()+':8888/images.html')
-      .waitForElementVisible('#nwCanvas', 2000)
+      .waitForElementVisible('#nwCanvas', 3000)
       .assert.title('HDF5 Interface')
       .useCss()
       .moveToElement('#nwCanvas',  1,  1)
+      .pause(10000)
       .mouseButtonDown(0)
       .pause(1000)
-      .moveToElement('#droppable',  160,  230)
+      .moveToElement('#droppable',  160,  130)
       .pause(1000)
       .mouseButtonUp(0)
-      .pause(30000)
+      .pause(50000)
       .assert.containsText('#results', '{"name":"nightwatch.jpg","width":550,"height":381,"planes":4,"npals":4,"size":838200}')
       .end();
 

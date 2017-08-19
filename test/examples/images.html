@@ -6,12 +6,13 @@
   <script type="text/javascript" src="HDF5Interface.js"></script>
   </head>
 <body>
-<div></output><script>
+<div></div><script>
 function makeImage(event, element){
     console.log("drop handler ");
+    if (event.dataTransfer) { event.dataTransfer.dropEffect = 'move'; }
    var dataItems = event.dataTransfer.items;
    for (var i = 0; i < dataItems.length; i += 1) {
-    console.log(dataItems[i].kind+" "+dataItems[i].type);
+    console.log(dataItems[i].kind+" type "+dataItems[i].type);
         var photoplate = document.createElement("CANVAS");
         photoplate.id="photoplate";
         var context = photoplate.getContext("2d");
@@ -67,18 +68,22 @@ function doDragStart(event, element) {
     console.log("dragStartHandler "+event.target.id);
   event.target.style.opacity = '0.4';  // this / e.target is the source node.
   event.dataTransfer.effectAllowed = "copyMove";
-  var dataURL = event.target.toDataURL();
+  //var dataURL = event.target.toDataURL();
         console.log(element.querySelector("#nwCanvas"));
         
         var fileName="nightwatch.jpg";
         //fileName=fileName.substring(fileName.lastIndexOf("/"));
-  event.dataTransfer.setData( "DownloadURL", 'image/png:' +fileName+":"+dataURL);
-  event.dataTransfer.setData("text/x-moz-url", dataURL);
-  event.dataTransfer.setData("application/x-moz-file-promise-url", dataURL);
+        event.dataTransfer.setData("text/plain", event.target.id);
+  //event.dataTransfer.setData( "DownloadURL", 'image/png:' +fileName+":"+dataURL);
+  //event.dataTransfer.setData("text/x-moz-url", dataURL);
+  //event.dataTransfer.setData("application/x-moz-file-promise-url", dataURL);
   //event.dataTransfer.setData("application/x-moz-file-promise-dest-filename", fileName);
   //ev.dataTransfer.mozSetDataAt('application/x-moz-file-promise',
   //                new dataProvider(),
   //                0, Components.interfaces.nsISupports);
+  var img = new Image(); 
+  img.src = 'nightwatch.jpg'; 
+  event.dataTransfer.setDragImage(img, 10, 10);
   event.preventDefault();
 }
 
@@ -98,8 +103,8 @@ function dragEndHandler(ev, element) {
   ev.preventDefault();
 }
 
-</script><div id="draggable" draggable="true" ondragstart="doDragStart(event, this)" ondragover="doDragOver(event)" ondrag="dragHandler(event, this)" ondragend="dragEndHandler(event, this)">
-    <canvas id="nwCanvas" draggable="true" width="550" height="381"></canvas>
+</script><div id="draggable" >
+    <canvas id="nwCanvas" draggable="true" width="550" height="381" ondragstart="doDragStart(event, this)" ondragover="doDragOver(event)" ondrag="dragHandler(event, this)" ondragend="dragEndHandler(event, this)"></canvas>
     <script>
       var canvas = document.getElementById('nwCanvas');
       var context = canvas.getContext('2d');

@@ -19,7 +19,8 @@
     "mocha": "3.5.0",
     "co-mocha": "1.2.0",
     "should": "11.2.1",
-    "nightwatch": "0.9.16"
+    "nightwatch": "0.9.16",
+    "chromedriver-html5-dragdrop": "0.3.0"
   },
   "contributors": [
     "Roger I Martin <mathmldashx@yahoo.com> (https://github.com/rimmartin/)"

@@ -17,7 +17,6 @@ module.exports = class H5Images {
 getInfo(path) {
     path=decodeURIComponent(path);
     if(!path.startsWith("/get_image_info/")) return;
-    console.dir("got to get image info");
     path=path.substring(16);
     var index=path.lastIndexOf("/");
     var stem = "";
@@ -29,8 +28,8 @@ getInfo(path) {
     }
     else
         leaf = path;
-    console.dir(stem);
-    console.dir(leaf);
+    //console.dir(stem);
+    //console.dir(leaf);
     var file = new hdf5.File(global.currentH5Path, Access.ACC_RDONLY);
     var group=file.openGroup(stem);
     var info=h5im.getImageInfo(group.id, leaf);
@@ -43,7 +42,6 @@ getInfo(path) {
 make(path) {
     path=decodeURIComponent(path);
     if(!path.startsWith("/make_image/")) return;
-    console.dir("got to make image");
     path=path.substring(12);
     var index=path.lastIndexOf("/");
     var stem = "";
@@ -55,12 +53,11 @@ make(path) {
     }
     else
         leaf = path;
-    console.dir(stem);
-    console.dir(leaf);
+    //console.dir(stem);
+    //console.dir(leaf);
             while(this.isPortTaken(this.port)){
                 
             }
-    console.dir("port available");
         const _this=this
     //var p = yield new Promise((resolve, reject) => {
         var WebSocketServer = require('ws').Server
@@ -73,14 +70,12 @@ make(path) {
         wss.on('connection', function connection(ws) {
             ws.binaryType = "nodebuffer";
             var metaData;
-          ws.on('message', function incoming(message, flags) {
-              if(!flags.binary){
-                  console.log('received: %s', message);
+          ws.on('message', function incoming(message) {
+              if(typeof message === 'string'){
                   metaData=JSON.parse(message);
               }
               else{
                     var image=message;//Buffer.from(imageBuffer);
-                    //console.dir(image.constructor.name);
                     image.width=metaData.width;
                     image.height=metaData.height;
                     image.planes=metaData.planes;
@@ -101,7 +96,6 @@ make(path) {
       }
           });
             ws.on('close', function close() {
-              console.log('mi disconnected');
               //resolve("");
               wss.close();
             });
@@ -115,9 +109,7 @@ make(path) {
 
     read(path, cb) {
         path=decodeURIComponent(path);
-        console.dir("got into read image "+path);
         if(!path.startsWith("/read_image/")) return;
-        console.dir("got to read image");
         path=path.substring(12);
         var index=path.lastIndexOf("/");
         var stem = "";
@@ -129,15 +121,14 @@ make(path) {
         }
         else
             leaf = path;
-        console.dir(stem);
-        console.dir(leaf);
+        //console.dir(stem);
+        //console.dir(leaf);
         while(this.isPortTaken(this.port)){
             
         }
         const _this=this;
             var WebSocketServer = require('ws').Server
               , wss = new WebSocketServer({ host: os.hostname(), port: _this.port, path: '/read-image', perMessageDeflate: true  });
-            console.dir(os.hostname()+" "+_this.port);
                 var file = new hdf5.File(global.currentH5Path, Access.ACC_RDONLY);
                 var group=file.openGroup(stem);
                 var buffer=h5im.readImage(group.id, leaf);
@@ -151,7 +142,6 @@ make(path) {
             wss.on('connection', function connection(ws) {
                 ws.binaryType = "nodebuffer";
                 ws.on('close', function close() {
-                  console.log('image disconnected');
                   //resolve("");
                   wss.close(function(){_this.status=false});
                 });
@@ -170,9 +160,7 @@ make(path) {
     
     readRegion(path, cb) {
         path=decodeURIComponent(path);
-        console.dir("got into read image region "+path);
         if(!path.startsWith("/read_image_region/")) return;
-        console.dir("got to read image region");
         path=path.substring(19);
         var index=path.lastIndexOf("/");
         var stem = "";
@@ -184,26 +172,24 @@ make(path) {
         }
         else
             leaf = path;
-        console.dir(stem);
-        console.dir(leaf);
+        //console.dir(stem);
+        //console.dir(leaf);
         while(this.isPortTaken(this.port)){
             
         }
         const _this=this;
             var WebSocketServer = require('ws').Server
               , wss = new WebSocketServer({ host: os.hostname(), port: _this.port, path: '/read-image-region', perMessageDeflate: true  });
-            console.dir(os.hostname()+" "+_this.port);
             wss.on('connection', function connection(ws) {
                 ws.binaryType = "nodebuffer";
                 ws.on('close', function close() {
-                  console.log('image region disconnected');
                   //resolve("");
                   wss.close(function(){_this.status=false});
                 });
                 var metaDataInput;
-                ws.on('message', function incoming(message, flags) {
-                  if(!flags.binary){
-                      console.log('region received: %s', message);
+                ws.on('message', function incoming(message) {
+                  if(typeof message === 'string'){
+                      //console.log('region received: %s', message);
                       metaDataInput=JSON.parse(message);
                     var file = new hdf5.File(global.currentH5Path, Access.ACC_RDONLY);
                     var group=file.openGroup(stem);

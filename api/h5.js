@@ -19,7 +19,6 @@ module.exports = class H5 {
     }
         
 createH5(path) {
-    console.dir("got to create h5");
     var index=path.lastIndexOf("/");
     var stem = "";
     var leaf = "";
@@ -30,8 +29,8 @@ createH5(path) {
     }
     else
         leaf = path;
-    console.dir(stem);
-    console.dir(leaf);
+    //console.dir(stem);
+    //console.dir(leaf);
     global.currentH5Path=leaf;
     var file = new hdf5.File(leaf, Access.ACC_TRUNC);
     file.close();
@@ -40,9 +39,7 @@ createH5(path) {
 createGroup(path) {
     path=decodeURIComponent(path);
     if(!path.startsWith("/create_group/")) return;
-    console.dir("got to make create group");
     path=path.substring(14);
-    console.dir(path);
     var file = new hdf5.File(global.currentH5Path, Access.ACC_RDWR);
     var group=file.createGroup(path);
     group.close();
@@ -53,7 +50,6 @@ createGroup(path) {
 setCompression(path) {
     path=decodeURIComponent(path);
     if(!path.startsWith("/set_compression/")) return;
-    console.dir("got to make create group");
     let property=JSON.parse(path.substring(17));
     
     this.compression=property.compression
