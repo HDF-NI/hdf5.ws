@@ -7,6 +7,7 @@ var Transform = require('stream').Transform
 var url = require('url')
 var fs = require('fs')
 var path = require('path')
+var zlib = require('zlib');
 
 var hdf5 = require('hdf5').hdf5;
 var Access = require('hdf5/lib/globals').Access;
@@ -37,8 +38,8 @@ describe('HDF5 datasets from browser', function() {
       file.close();
   }
   let h5=new H5();
-  let h5datasets=new H5Datasets(h5, 9900);
-  let h5images=new H5Images(h5, 9900);
+  let h5datasets=new H5Datasets(h5, 9700);
+  let h5images=new H5Images(h5, 9700);
 
   var theServer=http.createServer(function (request, response) {
            console.dir("req res ");
@@ -94,7 +95,8 @@ describe('HDF5 datasets from browser', function() {
              response.end("");
        }
        else if(resourcePath.endsWith("734344main_g306_wide_large.jpg")){
-         var filePath = "/home/roger/Pictures/734344main_g306_wide_large.jpg";
+         var filePath = __dirname+"/examples/734344main_g306_wide_large.jpg";
+         console.dir(filePath);
          response.writeHead(200)
          var fileStream = fs.createReadStream(filePath)
          fileStream.pipe(response)
@@ -130,7 +132,7 @@ describe('HDF5 datasets from browser', function() {
     console.dir("client err: "+err);
     socket.end('HTTP/1.1 400 Bad Request\r\n\r\n');
   });  
-  theServer.on('close', function () { console.dir("the server closed for some reason")});
+  theServer.on('close', function () { console.dir("the server closed ")});
   theServer.listen(8888);
 
   before(function() {
@@ -161,10 +163,10 @@ describe('HDF5 datasets from browser', function() {
   it('Start, stop and restart a websocket server', function(done) {
             console.dir("start wss");
           var WebSocketServer = require('ws').Server
-            , wss = new WebSocketServer({ host: os.hostname(), port: 9900, path: '/make-dataset' });
+            , wss = new WebSocketServer({ host: os.hostname(), port: 9700, path: '/make-dataset' });
           wss.close(function(){
             console.dir("start again");
-            wss = new WebSocketServer({ host: os.hostname(), port: 9900, path: '/make-dataset' });
+            wss = new WebSocketServer({ host: os.hostname(), port: 9700, path: '/make-dataset' });
             wss.close(function(){
               let hit=false;
               while(!hit){
@@ -177,7 +179,7 @@ describe('HDF5 datasets from browser', function() {
                   tester.once('close', function() { hit=false })
                   .close()
                 })
-                .listen(9900)
+                .listen(9700)
               }
             
               done()});
@@ -238,15 +240,24 @@ describe('HDF5 datasets from browser', function() {
     
     browser
       .url('http://'+os.hostname()+':8888/panningimages.html')
-      .waitForElementVisible('#viewportCanvas', 20000)
+      .waitForElementVisible('#photoplate', 5000)
       .assert.title('HDF5 Interface')
       .useCss()
-      .moveToElement('#viewportCanvas',  1,  1)
-      //.mouseButtonDown(0)
-      //.moveToElement('#editor',  160,  560)
-      //.mouseButtonUp(0)
-      .pause(60000)
-      .assert.containsText('#results', '{"name":"734344main_g306_wide_large.jpg","width":400,"height":400,"planes":4,"npals":4,"size":640000}')
+      /*.moveToElement('#photoplate',  5500,  5500)
+      .mouseButtonDown(0)
+      .pause(1000)
+      .moveToElement('#photoplate',  100,  100)
+      .pause(1000)
+      .mouseButtonUp(0)
+      .pause(1000)
+      .moveToElement('#photoplate',  10500,  10500)
+      .mouseButtonDown(0)
+      .pause(5000)
+      .moveToElement('#photoplate',  100,  100)
+      .pause(1000)
+      .mouseButtonUp(0)*/
+      .pause(30000)
+      //.assert.containsText('#results', '{"name":"734344main_g306_wide_large.jpg","width":400,"height":400,"planes":4,"npals":4,"size":640000}')
       .end();
 
     client.start(done);
@@ -254,18 +265,19 @@ describe('HDF5 datasets from browser', function() {
 
   afterEach(function() {
     browser.perform(function() {
-      console.log('afterEach')
+      console.log('afterEach');
     });
   });
 
   after(function(done) {
-    browser.end(function() {
-      console.log('afterAll')
-    });
+      browser.end(function() {
+        
+        console.log('afterAll')
+                   console.dir("theServer ending "+os.hostname());
+        theServer.close();
+      });
 
     //client.start(done);
-                 console.dir("theServer close "+os.hostname());
-    theServer.close();
   });
 
 });

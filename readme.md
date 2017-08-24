@@ -57,5 +57,21 @@ The following works with the 2d context of a canvas to display a 400x400 rectang
                 });
 ```
 
+### Testing - Current Status
+
+The tests are based on nightwatch https://github.com/nightwatchjs/nightwatch and subsequent selenium server. The selenium server needs to 
+be stood up prior to tests. And you'll need at minimum the selenium chrome driver.
+
+Until all tests are smooth best to test individually using the -g mocha switch
+```
+mocha --harmony --require should --require co-mocha --require nightwatch -g 'test panning images' ./test/test_client.js #2> /dev/null
+```
+For the 'test panning images' test I copy the http://www.nasa.gov/images/content/734344main_g306_wide_large.jpg picture to hdf5.ws/test/examples folder.
+
+I'll be going thru the testing this week to go further; there is a chrome driver  bug(https://bugs.chromium.org/p/chromedriver/issues/detail?id=841) that does't allow the html5 d&d cmmands to succeed.
+
+But the more pressing issue is the handling of large images. Working on the algorithms to bring regions up in the most efficient manner
+
+
 [node-version-image]: https://img.shields.io/node/v/hdf5.svg
 [node-version-url]: https://nodejs.org/en/download/

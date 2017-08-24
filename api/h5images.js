@@ -53,15 +53,15 @@ make(path) {
     }
     else
         leaf = path;
-    //console.dir(stem);
-    //console.dir(leaf);
+    console.dir(stem);
+    console.dir(leaf);
             while(this.isPortTaken(this.port)){
                 
             }
         const _this=this
     //var p = yield new Promise((resolve, reject) => {
         var WebSocketServer = require('ws').Server
-          , wss = new WebSocketServer({ host: os.hostname(), port: _this.port, path: '/make-image', maxPayload: 1024*1024*1024, perMessageDeflate: true  });
+          , wss = new WebSocketServer({ host: os.hostname(), port: _this.port, path: '/make-image', maxPayload: 1024*1024*1024, perMessageDeflate: false  });
             console.dir(os.hostname()+" "+_this.port);
         wss.on("error", error => {
             console.log("The server encountered an error! ");
@@ -75,7 +75,11 @@ make(path) {
                   metaData=JSON.parse(message);
               }
               else{
+                  
                     var image=message;//Buffer.from(imageBuffer);
+                    if(leaf.endsWith(".png")){
+                        
+                    }
                     image.width=metaData.width;
                     image.height=metaData.height;
                     image.planes=metaData.planes;
@@ -128,7 +132,7 @@ make(path) {
         }
         const _this=this;
             var WebSocketServer = require('ws').Server
-              , wss = new WebSocketServer({ host: os.hostname(), port: _this.port, path: '/read-image', perMessageDeflate: true  });
+              , wss = new WebSocketServer({ host: os.hostname(), port: _this.port, path: '/read-image', perMessageDeflate: false  });
                 var file = new hdf5.File(global.currentH5Path, Access.ACC_RDONLY);
                 var group=file.openGroup(stem);
                 var buffer=h5im.readImage(group.id, leaf);
@@ -146,7 +150,7 @@ make(path) {
                   wss.close(function(){_this.status=false});
                 });
                 ws.send(JSON.stringify(metaData));
-                ws.send(buffer, { binary: true, mask: false });
+                ws.send(buffer, { binary: true, compress: false, mask: false });
                 //ws.end("");
 
                 group.close();
@@ -179,11 +183,12 @@ make(path) {
         }
         const _this=this;
             var WebSocketServer = require('ws').Server
-              , wss = new WebSocketServer({ host: os.hostname(), port: _this.port, path: '/read-image-region', perMessageDeflate: true  });
+              , wss = new WebSocketServer({ host: os.hostname(), port: _this.port, path: '/read-image-region', perMessageDeflate: false  });
             wss.on('connection', function connection(ws) {
                 ws.binaryType = "nodebuffer";
                 ws.on('close', function close() {
                   //resolve("");
+                  console.log('rclose wss');
                   wss.close(function(){_this.status=false});
                 });
                 var metaDataInput;
@@ -202,7 +207,7 @@ make(path) {
                     var metaData={name: leaf, width: buffer.width, height: buffer.height, planes: buffer.planes, npals: buffer.planes, size: size}
                     cb(metaData);
                     ws.send(JSON.stringify(metaData));
-                    ws.send(buffer, { binary: true, mask: false });
+                    ws.send(buffer, { binary: true, compress: true, mask: false });
                     //ws.end("");
                     group.close();
                     file.close();
@@ -216,6 +221,7 @@ make(path) {
     }
     
     isPortTaken(port) {
+        try{
       var net = require('net')
       var tester = net.createServer()
       .once('error', function (err) {
@@ -226,7 +232,12 @@ make(path) {
         tester.once('close', function() { return false })
         .close()
       })
-      .listen(port)
+      .listen(port);
+        }
+        catch(ex){
+            
+        }
+      return false;
     }    
 }
 

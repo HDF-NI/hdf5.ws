@@ -147,7 +147,7 @@ describe("testing api interface ",function(){
                         console.log('No more data in response.');
                         var pi =  new Promise((resolve2, reject2) => {
                           var WebSocket = require('ws');
-                          var ws = new WebSocket('ws://'+os.hostname()+':9900/make-table', {protocolVersion: 13});
+                          var ws = new WebSocket('ws://'+os.hostname()+':9700/make-table', {protocolVersion: 13});
                           ws.binaryType = "nodebuffer";
                           ws.on('open', function open() {
                             var tableModel=new ArrayBuffer(3);
@@ -227,7 +227,7 @@ describe("testing api interface ",function(){
                         console.log('No more data in response.');
                         var pi =  new Promise((resolve2, reject2) => {
                             var WebSocket = require('ws');
-                            var ws = new WebSocket('ws://'+os.hostname()+':9900/make-dataset', {protocolVersion: 13});
+                            var ws = new WebSocket('ws://'+os.hostname()+':9700/make-dataset', {protocolVersion: 13});
                             ws.binaryType = "arraybuffer";
                             ws.on('open', function open() {
                             var buffer=new Float64Array(16);
@@ -299,7 +299,7 @@ describe("testing api interface ",function(){
                         console.log('No more data in response.');
                         var pi =  new Promise((resolve2, reject2) => {
                             var WebSocket = require('ws');
-                            var ws = new WebSocket('ws://'+os.hostname()+':9900/make-image', {protocolVersion: 13});
+                            var ws = new WebSocket('ws://'+os.hostname()+':9700/make-image', {protocolVersion: 13});
                             ws.binaryType = "nodebuffer";
                             ws.on('open', function open() {
                             var file2 = new hdf5.File('./test/examples/hdf5.h5', Access.ACC_RDONLY);

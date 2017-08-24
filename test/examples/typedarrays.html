@@ -9,7 +9,7 @@
 <div></output><script>
 function makeDataSet(){
     var data=new Float64Array([1.0, 2.0, 3.0, 5.0]);
-    var hdf5Interface=new HDF5Interface(9900);
+    var hdf5Interface=new HDF5Interface(9700);
     hdf5Interface.createGroup("pmcservices/x-ray/refinement");
     hdf5Interface.makeDataset("pmcservices/x-ray/refinement/Matrix", data, function(){
     hdf5Interface.readDataset("pmcservices/x-ray/refinement/Matrix", function(data, metaData){

@@ -21,7 +21,7 @@ function makeImage(event, element){
              photoplate.width=img.width;
              photoplate.height=img.height;
              context.drawImage(img, 0, 0);
-            var hdf5Interface=new HDF5Interface(9900);
+            var hdf5Interface=new HDF5Interface(9700);
             hdf5Interface.createGroup("pmcservices/x-ray/plates");
             var data=context.getImageData(0,0,img.width,img.height).data;
             hdf5Interface.makeImage("pmcservices/x-ray/plates/nightwatch.jpg", data, {name: file.name, width: img.width, height: img.height, planes: 4, npals: 4, size: 4*img.width*img.height}, function(){
