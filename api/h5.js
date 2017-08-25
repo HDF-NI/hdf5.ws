@@ -31,8 +31,8 @@ createH5(path) {
         leaf = path;
     //console.dir(stem);
     //console.dir(leaf);
-    global.currentH5Path=leaf;
-    var file = new hdf5.File(leaf, Access.ACC_TRUNC);
+    //global.currentH5Path=leaf;
+    var file = new hdf5.File(path, Access.ACC_TRUNC);
     file.close();
 }
 
@@ -44,6 +44,48 @@ createGroup(path) {
     var group=file.createGroup(path);
     group.close();
     file.close();
+    return;
+}
+
+renameGroup(path) {
+    path=decodeURIComponent(path);
+    if(!path.startsWith("/rename_group/")) return;
+    path=path.substring(14);
+    var index=path.lastIndexOf("/");
+    var stem = "";
+    var leaf = "";
+    if(index>=0)
+    {
+        stem=path.substring(0, index);
+        leaf=path.substring(index+1, path.length);
+    }
+    else
+        leaf = path;
+    console.dir(stem);
+    console.dir(leaf);
+    var rightBracketIndex=leaf.indexOf("[");
+    var argument="";
+    if(rightBracketIndex>0){
+        argument=leaf.substring(rightBracketIndex+1, leaf.length-1);
+        leaf=leaf.substring(0, rightBracketIndex);
+    }
+    try{
+    var file = new hdf5.File(global.currentH5Path, Access.ACC_RDWR);
+    if(stem){
+    console.dir(leaf+" to "+argument+" on "+stem);
+        var stemGroup=file.openGroup(stem);
+        stemGroup.move(argument,  stemGroup.id, leaf);
+        stemGroup.close();
+    }
+    else{
+    console.dir(leaf+" to2 "+argument);
+        file.move(argument, file.id, leaf);
+    }
+    file.close();
+    }
+    catch(err){
+        console.dir(err.message);
+    }
     return;
 }
 

@@ -62,7 +62,10 @@ The following works with the 2d context of a canvas to display a 400x400 rectang
 The tests are based on nightwatch https://github.com/nightwatchjs/nightwatch and subsequent selenium server. The selenium server needs to 
 be stood up prior to tests. And you'll need at minimum the selenium chrome driver.
 
-Until all tests are smooth best to test individually using the -g mocha switch
+```
+mocha --harmony  --require should --require co-mocha ./test/test_api.js
+```
+Until all test_client tests are smooth best to test individually using the -g mocha switch
 ```
 mocha --harmony --require should --require co-mocha --require nightwatch -g 'test panning images' ./test/test_client.js #2> /dev/null
 ```

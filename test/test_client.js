@@ -275,6 +275,7 @@ describe('HDF5 datasets from browser', function() {
         console.log('afterAll')
                    console.dir("theServer ending "+os.hostname());
         theServer.close();
+        done();
       });
 
     //client.start(done);

@@ -23,6 +23,8 @@ module.exports = class H5Tables {
         
 makeTable(path) {
     path=decodeURIComponent(path);
+    if(!path.startsWith("/make_table/")) return;
+    path=path.substring(12);
     var index=path.lastIndexOf("/");
     var stem = "";
     var leaf = "";
@@ -33,8 +35,8 @@ makeTable(path) {
     }
     else
         leaf = path;
-    //console.dir(stem);
-    //console.dir(leaf);
+    console.dir(stem);
+    console.dir(leaf);
     while(this.isPortTaken(this.port)){
         
     }
@@ -82,12 +84,21 @@ makeTable(path) {
                        tableModel[tableModel.length]=information;
                        tableModel[tableModel.length-1].name=metaData.column_labels[columnIndex];
                        break;
+                   case "Array":
+                       var information = new Array(metaData.rows);
+                       //console.dir(tableModelBuffer.toString());
+                       for(var i=0;i<metaData.rows;i++){
+                           information[i]=tableModelBuffer[i];
+                       //console.dir(information[i]);
+                       }
+                       tableModel[tableModel.length]=information;
+                       tableModel[tableModel.length-1].name=metaData.column_labels[columnIndex];
+                       break;
                     default:
-                       //console.dir(tableModel[tableModel.length-1].name+" unsupported type: "+tableModel[tableModel.length-1].length+" "+tableModelBuffer[0][propertyName].length);
+                       console.dir(metaData.column_labels[columnIndex]+" unsupported type: "+metaData.reconstructors[columnIndex]+" "+tableModelBuffer.byteLength);
                        break;
                }
                 if(columnIndex===metaData.column_labels.length-1){
-                //console.log('array?: %s', tableModel.length);
                 var file = new hdf5.File(global.currentH5Path, Access.ACC_RDWR);
                 var group=file.openGroup(stem);
                     h5tb.makeTable(group.id, leaf, tableModel);

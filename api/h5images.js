@@ -53,8 +53,8 @@ make(path) {
     }
     else
         leaf = path;
-    console.dir(stem);
-    console.dir(leaf);
+    //console.dir(stem);
+    //console.dir(leaf);
             while(this.isPortTaken(this.port)){
                 
             }

@@ -36,8 +36,8 @@ module.exports = class H5Datasets {
         }
         const _this=this
         //var p = yield new Promise((resolve, reject) => {
-            var WebSocketServer = require('ws').Server
-              , wss = new WebSocketServer({ host: os.hostname(), port: _this.port, path: '/make-dataset', perMessageDeflate: true });
+            var WebSocketServer = require('ws').Server,
+            wss = new WebSocketServer({ host: os.hostname(), port: _this.port, path: '/make-dataset', perMessageDeflate: true });
             
             wss.on('connection', function connection(ws) {
                 ws.binaryType = "nodebuffer";
