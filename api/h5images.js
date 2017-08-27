@@ -1,4 +1,5 @@
 var os = require("os");
+var net = require('net')
 var hdf5 = require('hdf5').hdf5;
 var h5im = require('hdf5').h5im;
 
@@ -207,11 +208,83 @@ make(path) {
                     var metaData={name: leaf, width: buffer.width, height: buffer.height, planes: buffer.planes, npals: buffer.planes, size: size}
                     cb(metaData);
                     ws.send(JSON.stringify(metaData));
-                    ws.send(buffer, { binary: true, compress: true, mask: false });
+                    ws.send(buffer, { binary: true, compress: false, mask: false });
                     //ws.end("");
                     group.close();
                     file.close();
-                    //wss.close(function(){_this.status=false});
+                  }
+                });
+                
+            });
+
+            return;
+    }
+    
+    readMosaic(path, cb) {
+        path=decodeURIComponent(path);
+        if(!path.startsWith("/read_image_mosaic/")) return;
+        path=path.substring(19);
+        var index=path.lastIndexOf("/");
+        var stem = "";
+        var leaf = "";
+        if(index>=0)
+        {
+            stem=path.substring(0, index);
+            leaf=path.substring(index+1, path.length);
+        }
+        else
+            leaf = path;
+        console.dir(stem);
+        console.dir(leaf);
+        while(this.isPortTaken(this.port)){
+            
+        }
+        const _this=this;
+            var WebSocketServer = require('ws').Server
+              , wss = new WebSocketServer({ host: os.hostname(), port: _this.port, path: '/read-image-mosaic', perMessageDeflate: false  });
+            wss.on('connection', function connection(ws) {
+                ws.binaryType = "nodebuffer";
+                ws.on('close', function close() {
+                  //resolve("");
+                  console.log('rclose wss');
+                  wss.close(function(){_this.status=false});
+                });
+                var metaDataInput;
+                ws.on('message', function incoming(message) {
+                  if(typeof message === 'string'){
+                      //console.log('region received: %s', message);
+                      metaDataInput=JSON.parse(message);
+                      console.dir(metaDataInput);
+                    var file = new hdf5.File(global.currentH5Path, Access.ACC_RDONLY);
+                    var group=file.openGroup(stem);
+                    var buffer=h5im.readImageRegion(group.id, leaf, metaDataInput);
+                    var channelSize = buffer.width * buffer.height;
+                    var size = channelSize * (buffer.planes);
+                    var redChannelEnd = channelSize * 1;
+                    var greenChannelEnd = channelSize * 2;
+                    var blueChannelEnd = channelSize * 3;
+                    var metaData={name: leaf, startX: 0, startY: 0, width: buffer.width, height: buffer.height, planes: buffer.planes, npals: buffer.planes, size: size}
+                    cb(metaData);
+                    ws.send(JSON.stringify(metaData));
+                    ws.send(buffer, { binary: true, compress: false, mask: false });
+                    var boundary=1;
+                    var originStartX=metaDataInput.start[0];
+                    var originStartY=metaDataInput.start[1];
+                    for(var j=-boundary;j<=boundary;j++){
+                        metaDataInput.start[1]=originStartY+j*400;
+                        metaData.startY=j*400;
+                    for(var i=-boundary;i<=boundary;i++){
+                        if(i>-boundary && j>-boundary && i<boundary && j<boundary)continue;
+                        metaDataInput.start[0]=originStartX+i*400;
+                        metaData.startX=i*400;
+                        ws.send(JSON.stringify(metaData));
+                        buffer=h5im.readImageRegion(group.id, leaf, metaDataInput);
+                        ws.send(buffer, { binary: true, compress: false, mask: false });
+                    }
+                    }
+                    //ws.end("");
+                    group.close();
+                    file.close();
                   }
                 });
                 
@@ -222,7 +295,6 @@ make(path) {
     
     isPortTaken(port) {
         try{
-      var net = require('net')
       var tester = net.createServer()
       .once('error', function (err) {
         if (err.code != 'EADDRINUSE') return false

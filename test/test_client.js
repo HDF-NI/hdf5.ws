@@ -42,13 +42,12 @@ describe('HDF5 datasets from browser', function() {
   let h5images=new H5Images(h5, 9700);
 
   var theServer=http.createServer(function (request, response) {
-           console.dir("req res ");
      try {
        var requestUrl = url.parse(request.url);
-           console.dir("requestUrl "+requestUrl);
+           //console.dir("requestUrl "+requestUrl);
 
        var resourcePath=path.normalize(requestUrl.pathname);
-           console.dir("resourcePath "+resourcePath);
+           //console.dir("resourcePath "+resourcePath);
        if(resourcePath.startsWith("/make_dataset/")){
          h5datasets.makeDataset(resourcePath);
          response.writeHead(200);
@@ -88,6 +87,14 @@ describe('HDF5 datasets from browser', function() {
          //response.write("hoe");
              response.end("");
        }
+       else if(resourcePath.startsWith("/read_image_mosaic/")){
+         h5images.readMosaic(resourcePath, function(metaData){
+           //response.write(JSON.stringify(metaData));
+         });
+         response.writeHead(200);
+         //response.write("hoe");
+             response.end("");
+       }
        else if(resourcePath.startsWith("/create_group/")){
          h5.createGroup(resourcePath);
          response.writeHead(200);
@@ -96,7 +103,7 @@ describe('HDF5 datasets from browser', function() {
        }
        else if(resourcePath.endsWith("734344main_g306_wide_large.jpg")){
          var filePath = __dirname+"/examples/734344main_g306_wide_large.jpg";
-         console.dir(filePath);
+         //console.dir(filePath);
          response.writeHead(200)
          var fileStream = fs.createReadStream(filePath)
          fileStream.pipe(response)
@@ -107,7 +114,7 @@ describe('HDF5 datasets from browser', function() {
          
        }
        else{
-           console.dir("resourcePath "+resourcePath);
+           //console.dir("resourcePath "+resourcePath);
          var filePath = __dirname+"/examples"+resourcePath;
          console.dir("filePath "+filePath);
          if(filePath.endsWith(".js")){

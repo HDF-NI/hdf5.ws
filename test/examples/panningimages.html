@@ -53,17 +53,19 @@ function makeImage(){
             //var data = convertDataURIToBinaryFetch(photoplate.toDataURL());
             //document.getElementById('canvasImg').src = dataURL;
             hdf5Interface.makeImage("NASA/plates/734344main_g306_wide_large.png", data, {width: img.width, height: img.height, planes: 4, npals: 4, size: 4*img.width*img.height}, function(){
-                console.log("made");
+                //console.log("made");
                 var imageInfo=hdf5Interface.getImageInfo("NASA/plates/734344main_g306_wide_large.png");
-                console.log(imageInfo);
-		for(var j=0;j<1;j++){
-		var offsetX=(imageInfo.width-1)/2;
-		var offsetY=(imageInfo.height-1)/2+j*400;
-                hdf5Interface.requestImageRegion("NASA/plates/734344main_g306_wide_large.png", {start: [offsetX, offsetY, 0], stride: [1, 1, 1], count: [400, 400, 4]}, function(data, metaData){
-                    console.log(metaData);
-                    document.getElementById("results").appendChild(document.createTextNode(JSON.stringify(metaData)));
+                //console.log(imageInfo);
+        var j = 0;
+  		var offsetX=(imageInfo.width-1)/2;
+  		var offsetY=(imageInfo.height-1)/2;
                     var viewportCanvas = document.getElementById('viewportCanvas');
+             viewportCanvas.width=img.width;
+             viewportCanvas.height=img.height;
+                    
                     var viewPortContext = viewportCanvas.getContext("2d");
+        hdf5Interface.requestImageMosaic("NASA/plates/734344main_g306_wide_large.png", {start: [offsetX, offsetY, 0], stride: [1, 1, 1], count: [400, 400, 4]}, function(data, metaData){
+                    if(j===0)document.getElementById("results").appendChild(document.createTextNode(JSON.stringify(metaData)));
                     var imageData=viewPortContext.createImageData(metaData.width, metaData.height);
                     var pos=0;
                     // Got new data
@@ -77,11 +79,12 @@ function makeImage(){
                             (metaData.planes>3) ? imageData.data[pos++] =dv.getUint8(i+3) : imageData.data[pos++] = 255; // opaque alpha
                     }
                      // Display new data in browser!
-                    viewPortContext.putImageData(imageData, 100, 100);
-            
+                    viewPortContext.putImageData(imageData, 420+metaData.startY, 420+metaData.startX);
+                    console.log("j="+j);
+                    j++;
+                    //resolve("great!");
                 });
-		}
-            });
+                });
          }
        //var file="http://www.nasa.gov/images/content/734344main_g306_wide_large.jpg";
        img.src = "734344main_g306_wide_large.jpg";
@@ -97,7 +100,7 @@ window.onload = function() {
 
 </script><div id="outerDiv">
     <div style="z-index: 1">
-    <canvas id="photoplate" style="display:none;"></canvas>
+    <canvas id="photoplate" ></canvas>
     </div>
     <div style="z-index: 2">
     <canvas id="viewportCanvas" width="400" height="400"></canvas>
