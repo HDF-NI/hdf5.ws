@@ -267,19 +267,20 @@ make(path) {
                     cb(metaData);
                     ws.send(JSON.stringify(metaData));
                     ws.send(buffer, { binary: true, compress: false, mask: false });
-                    var boundary=1;
                     var originStartX=metaDataInput.start[0];
                     var originStartY=metaDataInput.start[1];
+                    for(var boundary=1;boundary<=metaDataInput.boundary;boundary++){
                     for(var j=-boundary;j<=boundary;j++){
-                        metaDataInput.start[1]=originStartY+j*400;
-                        metaData.startY=j*400;
+                        metaDataInput.start[1]=originStartY+j*metaDataInput.count[1];
+                        metaData.startY=j*metaDataInput.count[1];
                     for(var i=-boundary;i<=boundary;i++){
                         if(i>-boundary && j>-boundary && i<boundary && j<boundary)continue;
-                        metaDataInput.start[0]=originStartX+i*400;
-                        metaData.startX=i*400;
+                        metaDataInput.start[0]=originStartX+i*metaDataInput.count[0];
+                        metaData.startX=i*metaDataInput.count[0];
                         ws.send(JSON.stringify(metaData));
                         buffer=h5im.readImageRegion(group.id, leaf, metaDataInput);
                         ws.send(buffer, { binary: true, compress: false, mask: false });
+                    }
                     }
                     }
                     //ws.end("");

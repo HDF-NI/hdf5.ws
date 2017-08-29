@@ -57,6 +57,14 @@ The following works with the 2d context of a canvas to display a 400x400 rectang
                 });
 ```
 
+It is now possible to bring up a mosaic of tiles from an image picking a central tile to start with.
+https://github.com/HDF-NI/hdf5.ws/blob/master/test/examples/panningimages.html#L67
+```
+{start: [offsetX, offsetY, 0], stride: [1, 1, 1], count: [tileSize, tileSize, 4], boundary: 10}
+```
+The boundary is how many tiles out to the edge of the final region from the initial center tile.
+
+
 ### Testing - Current Status
 
 The tests are based on nightwatch https://github.com/nightwatchjs/nightwatch and subsequent selenium server. The selenium server needs to 
@@ -71,9 +79,10 @@ mocha --harmony --require should --require co-mocha --require nightwatch -g 'tes
 ```
 For the 'test panning images' test I copy the http://www.nasa.gov/images/content/734344main_g306_wide_large.jpg picture to hdf5.ws/test/examples folder.
 
-I'll be going thru the testing this week to go further; there is a chrome driver  bug(https://bugs.chromium.org/p/chromedriver/issues/detail?id=841) that does't allow the html5 d&d cmmands to succeed.
+There is a chrome driver  bug(https://bugs.chromium.org/p/chromedriver/issues/detail?id=841) that does't allow the html5 d&d cmmands to succeed.
 
-But the more pressing issue is the handling of large images. Working on the algorithms to bring regions up in the most efficient manner
+But the more pressing issue is the handling of large images. Working on the algorithms to bring regions up in the most efficient manner.
+ Currently can bring up regions in a tiled fashion without any compression.
 
 
 [node-version-image]: https://img.shields.io/node/v/hdf5.svg

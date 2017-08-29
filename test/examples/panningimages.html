@@ -57,6 +57,7 @@ function makeImage(){
                 var imageInfo=hdf5Interface.getImageInfo("NASA/plates/734344main_g306_wide_large.png");
                 //console.log(imageInfo);
         var j = 0;
+        var tileSize=40;
   		var offsetX=(imageInfo.width-1)/2;
   		var offsetY=(imageInfo.height-1)/2;
                     var viewportCanvas = document.getElementById('viewportCanvas');
@@ -64,7 +65,7 @@ function makeImage(){
              viewportCanvas.height=img.height;
                     
                     var viewPortContext = viewportCanvas.getContext("2d");
-        hdf5Interface.requestImageMosaic("NASA/plates/734344main_g306_wide_large.png", {start: [offsetX, offsetY, 0], stride: [1, 1, 1], count: [400, 400, 4]}, function(data, metaData){
+        hdf5Interface.requestImageMosaic("NASA/plates/734344main_g306_wide_large.png", {start: [offsetX, offsetY, 0], stride: [1, 1, 1], count: [tileSize, tileSize, 4], boundary: 10}, function(data, metaData){
                     if(j===0)document.getElementById("results").appendChild(document.createTextNode(JSON.stringify(metaData)));
                     var imageData=viewPortContext.createImageData(metaData.width, metaData.height);
                     var pos=0;
