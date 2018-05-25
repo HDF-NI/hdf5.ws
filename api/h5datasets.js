@@ -55,78 +55,34 @@ module.exports = class H5Datasets {
                 
                         var file = new hdf5.File(global.currentH5Path, Access.ACC_RDWR);
                         var group=file.openGroup(stem);
+                        var bufferType=undefined;
                         switch(metaData.reconstructor){
                             case "Float64Array":
-                                var buffer=message;
-                                buffer.rank=metaData.rank;
-                                buffer.rows=metaData.rows;
-                                if(metaData.rank>=2)buffer.columns=metaData.columns;
-                                buffer.type=H5Type.H5T_NATIVE_DOUBLE;
-                                h5lt.makeDataset(group.id, leaf, buffer);
+                                bufferType=H5Type.H5T_NATIVE_DOUBLE;
                                 break;
                             case "Float32Array":
-                                var buffer=message;
-                                buffer.rank=metaData.rank;
-                                buffer.rows=metaData.rows;
-                                if(metaData.rank>=2)buffer.columns=metaData.columns;
-                                buffer.type=H5Type.H5T_NATIVE_FLOAT;
-                                h5lt.makeDataset(group.id, leaf, buffer);
+                                bufferType=H5Type.H5T_NATIVE_FLOAT;
                                 break;
                             case "Int32Array":
-                                var buffer=message;
-                                buffer.rank=metaData.rank;
-                                buffer.rows=metaData.rows;
-                                if(metaData.rank>=2)buffer.columns=metaData.columns;
-                                buffer.type=H5Type.H5T_NATIVE_INT;
-                                h5lt.makeDataset(group.id, leaf, buffer);
+                                bufferType=H5Type.H5T_NATIVE_INT;
                                 break;
                             case "Uint32Array":
-                                var buffer=message;
-                                buffer.rank=metaData.rank;
-                                buffer.rows=metaData.rows;
-                                if(metaData.rank>=2)buffer.columns=metaData.columns;
-                                buffer.type=H5Type.H5T_NATIVE_UINT;
-                                h5lt.makeDataset(group.id, leaf, buffer);
+                                bufferType=H5Type.H5T_NATIVE_UINT;
                                 break;
                             case "Int16Array":
-                                var buffer=message;
-                                buffer.rank=metaData.rank;
-                                buffer.rows=metaData.rows;
-                                if(metaData.rank>=2)buffer.columns=metaData.columns;
-                                buffer.type=H5Type.H5T_NATIVE_SHORT;
-                                h5lt.makeDataset(group.id, leaf, buffer);
+                                bufferType=H5Type.H5T_NATIVE_SHORT;
                                 break;
                             case "Uint16Array":
-                                var buffer=message;
-                                buffer.rank=metaData.rank;
-                                buffer.rows=metaData.rows;
-                                if(metaData.rank>=2)buffer.columns=metaData.columns;
-                                buffer.type=H5Type.H5T_NATIVE_USHORT;
-                                h5lt.makeDataset(group.id, leaf, buffer);
+                                bufferType=H5Type.H5T_NATIVE_USHORT;
                                 break;
                             case "Int8Array":
-                                var buffer=message;
-                                buffer.rank=metaData.rank;
-                                buffer.rows=metaData.rows;
-                                if(metaData.rank>=2)buffer.columns=metaData.columns;
-                                buffer.type=H5Type.H5T_NATIVE_CHAR;
-                                h5lt.makeDataset(group.id, leaf, buffer);
+                                bufferType=H5Type.H5T_NATIVE_CHAR;
                                 break;
                             case "Uint8Array":
-                                var buffer=message;
-                                buffer.rank=metaData.rank;
-                                buffer.rows=metaData.rows;
-                                if(metaData.rank>=2)buffer.columns=metaData.columns;
-                                buffer.type=H5Type.H5T_NATIVE_UCHAR;
-                                h5lt.makeDataset(group.id, leaf, buffer);
+                                bufferType=H5Type.H5T_NATIVE_UCHAR;
                                 break;
                             case "Uint8ClampedArray":
-                                var buffer=message;
-                                buffer.rank=metaData.rank;
-                                buffer.rows=metaData.rows;
-                                if(metaData.rank>=2)buffer.columns=metaData.columns;
-                                buffer.type=H5Type.H5T_NATIVE_UCHAR;
-                                h5lt.makeDataset(group.id, leaf, buffer);
+                                bufferType=H5Type.H5T_NATIVE_UCHAR;
                                 break;
                             //case "Array":
                               //  buffer.type=H5Type.H5T_NATIVE_FLOAT;
@@ -134,6 +90,24 @@ module.exports = class H5Datasets {
                              default:
                                 console.dir(leaf+" unsupported type: "+metaData.reconstructor);
                                 break;
+                        }
+                        if(bufferTpe!=undefined){
+                            var options=new Object();
+                            options.type=bufferType;
+                            options.rank=metaData.rank;
+                            switch(metaData.rank){
+                                case 3:
+                                    options.files=metaData.files;
+                                case 3:
+                                    options.sections=metaData.sections;
+                                case 2:
+                                    options.columns=metaData.columns;
+                                case 1:
+                                    options.rows=metaData.rows;
+                                    break;
+                            }
+                            var buffer=message;
+                            h5lt.makeDataset(group.id, leaf, buffer, options);
                         }
                         group.close();
                         file.close();
@@ -183,18 +157,25 @@ module.exports = class H5Datasets {
                     });
                     var file = new hdf5.File(global.currentH5Path, Access.ACC_RDONLY);
                     var group=file.openGroup(stem);
-                    const readBuffer=h5lt.readDataset(group.id, leaf);
-                    switch(readBuffer.rank){
-                        case 3:
-                            ws.send(JSON.stringify({reconstructor: readBuffer.constructor.name, rank: readBuffer.rank, rows: readBuffer.rows, columns: readBuffer.columns, sections: readBuffer.sections}));
-                            break;
-                        case 2:
-                            ws.send(JSON.stringify({reconstructor: readBuffer.constructor.name, rank: readBuffer.rank, rows: readBuffer.rows, columns: readBuffer.columns}));
-                            break;
-                        default:
-                            ws.send(JSON.stringify({reconstructor: readBuffer.constructor.name, rank: readBuffer.rank, rows: readBuffer.rows}));
-                            break;
-                    }
+                    var options=new Object();
+                    options.reconstructor=readBuffer.constructor.name;
+                    const readBuffer=h5lt.readDataset(group.id, leaf, (_options)=>{
+                        options.rank=_options.rank;
+                        switch(_options.rank){
+                            case 4:
+                                options.files=_options.files;
+                            case 3:
+                                options.sections=_options.sections;
+                            case 2:
+                                options.columns=_options.columns;
+                            case 1:
+                                options.rows=_options.rows;
+                                break;
+                            default:
+                                break;
+                        }
+                    });
+                    ws.send(JSON.stringify(options));
                     ws.send(readBuffer, { binary: true, mask: false });
                     //ws.end("");
     
@@ -244,11 +225,21 @@ module.exports = class H5Datasets {
                         var file = new hdf5.File(global.currentH5Path, Access.ACC_RDWR);
                         var group=file.openGroup(stem);
                         var buffer=message;
-                        buffer.rank=metaData.rank;
-                        buffer.rows=metaData.rows;
-                        if(metaData.rank>=2)buffer.columns=metaData.columns;
-                        buffer.type=H5Type.H5T_NATIVE_UCHAR;
-                        h5lt.makeDataset(group.id, leaf, buffer.toString());
+                        var options=new Object();
+                        options.type=H5Type.H5T_NATIVE_UCHAR;
+                        options.rank=metaData.rank;
+                        switch(metaData.rank){
+                            case 3:
+                                options.files=metaData.files;
+                            case 3:
+                                options.sections=metaData.sections;
+                            case 2:
+                                options.columns=metaData.columns;
+                            case 1:
+                                options.rows=metaData.rows;
+                                break;
+                        }
+                        h5lt.makeDataset(group.id, leaf, buffer.toString(), options);
                         group.close();
                         file.close();
                         //wss.close(function(){_this.status=false});
@@ -297,8 +288,25 @@ module.exports = class H5Datasets {
                     });
                     var file = new hdf5.File(global.currentH5Path, Access.ACC_RDONLY);
                     var group=file.openGroup(stem);
-                    const readBuffer=h5lt.readDataset(group.id, leaf);
-                    ws.send(JSON.stringify({reconstructor: readBuffer.constructor.name, rank: readBuffer.rank, rows: readBuffer.rows}));
+                    var options=new Object();
+                    options.reconstructor=readBuffer.constructor.name;
+                    const readBuffer=h5lt.readDataset(group.id, leaf, (_options)=>{
+                        options.rank=_options.rank;
+                        switch(_options.rank){
+                            case 4:
+                                options.files=_options.files;
+                            case 3:
+                                options.sections=_options.sections;
+                            case 2:
+                                options.columns=_options.columns;
+                            case 1:
+                                options.rows=_options.rows;
+                                break;
+                            default:
+                                break;
+                        }
+                    });
+                    ws.send(JSON.stringify(options));
                     ws.send(readBuffer, { binary: true, mask: false });
                     //ws.end("");
     

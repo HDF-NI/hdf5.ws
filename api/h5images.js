@@ -77,28 +77,17 @@ make(path) {
               }
               else{
                   
-                    var image=message;//Buffer.from(imageBuffer);
-                    if(leaf.endsWith(".png")){
-                        
-                    }
-                    image.width=metaData.width;
-                    image.height=metaData.height;
-                    image.planes=metaData.planes;
-                    image.interlace=Interlace.INTERLACE_PIXEL;//metaData.interlace;
-                    image.npals=metaData.npals;
-/*for(var key in image){
-    if (image.hasOwnProperty(key)) {
-      console.dir(key);
-    }
-   }   */                         
+                var image=message;//Buffer.from(imageBuffer);
+                if(leaf.endsWith(".png")){
 
+                }
                 var file = new hdf5.File(global.currentH5Path, Access.ACC_RDWR);
                 var group=file.openGroup(stem);
-                h5im.makeImage(group.id, leaf, image);
+                h5im.makeImage(group.id, leaf, image, {interlace: Interlace.INTERLACE_PIXEL, width: metaData.width, height: metaData.height, planes: metaData.planes, npals: metaData.npals});
                 group.close();
                 file.close();
                 wss.close();
-      }
+            }
           });
             ws.on('close', function close() {
               //resolve("");

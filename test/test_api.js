@@ -35,8 +35,9 @@ describe("testing api interface ",function(){
 
         // open hdf file
         //var app;
-        before(function*(){
+        before(function(done){
           //app = require;
+          done();
         });
 
         it("create an h5 file", function(done){
@@ -149,7 +150,7 @@ describe("testing api interface ",function(){
             console.dir(err.message);
             }
         });
-        it("make an image", function*(){
+        it("make an image", function(done){
           var holder=new Object();
             try
             {
@@ -214,8 +215,9 @@ describe("testing api interface ",function(){
             catch (err) {
             console.dir(err.message);
             }
+            done();
         });
-        it("make a table", function*(){
+        it("make a table", function(done){
           var holder=new Object();
             try
             {
@@ -308,6 +310,7 @@ describe("testing api interface ",function(){
             catch (err) {
             console.dir(err.message);
             }
+            done();
         });
         
   afterEach(function() {
