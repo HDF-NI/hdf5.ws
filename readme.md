@@ -71,11 +71,11 @@ The tests are based on nightwatch https://github.com/nightwatchjs/nightwatch and
 be stood up prior to tests. And you'll need at minimum the selenium chrome driver.
 
 ```
-mocha --harmony  --require should --require co-mocha ./test/test_api.js
+mocha --harmony  --require should ./test/test_api.js
 ```
 Until all test_client tests are smooth best to test individually using the -g mocha switch
 ```
-mocha --harmony --require should --require co-mocha --require nightwatch -g 'test panning images' ./test/test_client.js #2> /dev/null
+mocha --harmony --require should --require nightwatch -g 'test panning images' ./test/test_client.js #2> /dev/null
 ```
 For the 'test panning images' test I copy the http://www.nasa.gov/images/content/734344main_g306_wide_large.jpg picture to hdf5.ws/test/examples folder.
 
