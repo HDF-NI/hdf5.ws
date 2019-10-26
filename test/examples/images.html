@@ -4,15 +4,36 @@
   <title>HDF5 Interface</title>
   <link rel="shortcut icon" href="data:image/x-icon;," type="image/x-icon">
   <script type="text/javascript" src="HDF5Interface.js"></script>
+  <style type="text/css">
+#droppable {
+  border: 5px solid blue;
+  width:  200px;
+  height: 100px;
+}      
+  </style>
   </head>
 <body>
 <div></div><script>
 function makeImage(event, element){
     console.log("drop handler ");
     if (event.dataTransfer) { event.dataTransfer.dropEffect = 'move'; }
+    var urlList = event.dataTransfer.getData("text/uri-list");
+    for(var i = 0;i<event.dataTransfer.types.length;i++){
+        console.log(event.dataTransfer.types[i]);
+    }
+    console.log(urlList);
+    for(var i = 0;i<urlList.length;i++){
+        console.log(urlList[i]);
+    }
    var dataItems = event.dataTransfer.items;
-   for (var i = 0; i < dataItems.length; i += 1) {
+   console.log("how many "+dataItems.length);
+   if(dataItems.length>0)dataItems[0].getAsString(function (s){console.log(s);});
+   for (var i = 1; i < dataItems.length; i += 1) {
     console.log(dataItems[i].kind+" type "+dataItems[i].type);
+        while (element.firstChild) {
+          element.removeChild(element.firstChild);
+        }
+       dataItems[i].getAsString(function (file){
         var photoplate = document.createElement("CANVAS");
         photoplate.id="photoplate";
         var context = photoplate.getContext("2d");
@@ -46,16 +67,14 @@ function makeImage(event, element){
                 });
             });
          }
-       var file=dataItems[i].getAsFile();
-       img.src = window.URL.createObjectURL(file);
-        while (element.firstChild) {
-          element.removeChild(element.firstChild);
-        }
+       img.src = file;//window.URL.createObjectURL(file);
 
         var divEditor=document.createElement("DIV");
         divEditor.id="editor";
         divEditor.appendChild(photoplate);
         element.appendChild(divEditor);
+
+       });
 
     event.preventDefault();
    }
@@ -64,16 +83,21 @@ function makeImage(event, element){
 
 function doDragStart(event, element) {
         document.getElementById("results").appendChild(document.createTextNode("dragStartHandler "));
-    console.log("dragStartHandler ");
-    console.log("dragStartHandler "+event.target.id);
   event.target.style.opacity = '0.4';  // this / e.target is the source node.
   event.dataTransfer.effectAllowed = "copyMove";
   //var dataURL = event.target.toDataURL();
-        console.log(element.querySelector("#nwCanvas"));
-        
-        var fileName="nightwatch.jpg";
+        //console.log(element.querySelector("#nwCanvas"));
+      var canvas = document.getElementById('nwCanvas');
+      var dataURL = canvas.toDataURL('image/png', 1.0);
+      //console.log(dataURL);
+      //var ctx = canvas.getContext('2d');
+//var imgData = ctx.getImageData(10, 10, 50, 50);        
+        var fileName="nightwatch.png";
+        event.dataTransfer.setData("text/plain", fileName)
         //fileName=fileName.substring(fileName.lastIndexOf("/"));
-        event.dataTransfer.setData("text/plain", event.target.id);
+//var imageSrc = $(dragItem).prop('src');
+//  var imageHTML = $(dragItem).prop('outerHTML');        
+        event.dataTransfer.setData("image/png", dataURL);
   //event.dataTransfer.setData( "DownloadURL", 'image/png:' +fileName+":"+dataURL);
   //event.dataTransfer.setData("text/x-moz-url", dataURL);
   //event.dataTransfer.setData("application/x-moz-file-promise-url", dataURL);
@@ -81,13 +105,14 @@ function doDragStart(event, element) {
   //ev.dataTransfer.mozSetDataAt('application/x-moz-file-promise',
   //                new dataProvider(),
   //                0, Components.interfaces.nsISupports);
-  var img = new Image(); 
-  img.src = 'nightwatch.jpg'; 
-  event.dataTransfer.setDragImage(img, 10, 10);
-  event.preventDefault();
+  //var img = new Image(); 
+  //img.src = 'nightwatch.jpg'; 
+  //event.dataTransfer.setDragImage(img, 10, 10);
+  //event.preventDefault();
 }
 
 function doDragOver(e) {
+    console.log("doDragOver "+e.target.id);
     e.preventDefault();
 };
 

@@ -28,7 +28,7 @@
     "url": "https://github.com/HDF-NI/hdf5.ws/issues"
   },
   "devDependencies": {
-    "cypress": "^3.1.1",
+    "cypress": "^3.5.0",
     "wait-on": "^3.2.0"
   }
 }

@@ -23,8 +23,6 @@ module.exports = class H5Tables {
         
 makeTable(path) {
     path=decodeURIComponent(path);
-    if(!path.startsWith("/make_table/")) return;
-    path=path.substring(12);
     var index=path.lastIndexOf("/");
     var stem = "";
     var leaf = "";
@@ -37,6 +35,7 @@ makeTable(path) {
         leaf = path;
     console.dir(stem);
     console.dir(leaf);
+    console.log("leaf to port "+this.port);
     while(this.isPortTaken(this.port)){
         
     }

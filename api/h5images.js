@@ -17,8 +17,6 @@ module.exports = class H5Images {
 
 getInfo(path) {
     path=decodeURIComponent(path);
-    if(!path.startsWith("/get_image_info/")) return;
-    path=path.substring(16);
     var index=path.lastIndexOf("/");
     var stem = "";
     var leaf = "";
@@ -42,30 +40,17 @@ getInfo(path) {
         
 make(path) {
     path=decodeURIComponent(path);
-    if(!path.startsWith("/make_image/")) return;
-    path=path.substring(12);
-    var index=path.lastIndexOf("/");
-    var stem = "";
-    var leaf = "";
-    if(index>=0)
-    {
-        stem=path.substring(0, index);
-        leaf=path.substring(index+1, path.length);
-    }
-    else
-        leaf = path;
-    //console.dir(stem);
-    //console.dir(leaf);
             while(this.isPortTaken(this.port)){
                 
             }
         const _this=this
+    console.log(os.hostname()+" "+_this.port);
     //var p = yield new Promise((resolve, reject) => {
         var WebSocketServer = require('ws').Server
           , wss = new WebSocketServer({ host: os.hostname(), port: _this.port, path: '/make-image', maxPayload: 1024*1024*1024, perMessageDeflate: false  });
             console.dir(os.hostname()+" "+_this.port);
         wss.on("error", error => {
-            console.log("The server encountered an error! ");
+            console.log("The server encountered an error! "+error.message);
             while(_this.isPortTaken(_this.port)){};
             });
         wss.on('connection', function connection(ws) {
@@ -103,8 +88,6 @@ make(path) {
 
     read(path, cb) {
         path=decodeURIComponent(path);
-        if(!path.startsWith("/read_image/")) return;
-        path=path.substring(12);
         var index=path.lastIndexOf("/");
         var stem = "";
         var leaf = "";
@@ -154,8 +137,6 @@ make(path) {
     
     readRegion(path, cb) {
         path=decodeURIComponent(path);
-        if(!path.startsWith("/read_image_region/")) return;
-        path=path.substring(19);
         var index=path.lastIndexOf("/");
         var stem = "";
         var leaf = "";
@@ -210,8 +191,6 @@ make(path) {
     }
     
     readMosaic(path, cb) {
-        path=decodeURIComponent(path);
-        if(!path.startsWith("/read_image_mosaic/")) return;
         path=path.substring(19);
         var index=path.lastIndexOf("/");
         var stem = "";
