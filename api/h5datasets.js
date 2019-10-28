@@ -15,7 +15,6 @@ module.exports = class H5Datasets {
     }
         
     makeDataset(path) {
-        path=decodeURIComponent(path);
         var index=path.lastIndexOf("/");
         var stem = "";
         var leaf = "";
@@ -125,7 +124,6 @@ module.exports = class H5Datasets {
     }
     
         readDataset(path) {
-            path=decodeURIComponent(path);
             var index=path.lastIndexOf("/");
             var stem = "";
             var leaf = "";
@@ -185,7 +183,6 @@ module.exports = class H5Datasets {
         }
 
     makeText(path) {
-        path=decodeURIComponent(path);
         var index=path.lastIndexOf("/");
         var stem = "";
         var leaf = "";
@@ -252,7 +249,6 @@ module.exports = class H5Datasets {
     }
     
         readText(path) {
-            path=decodeURIComponent(path);
             var index=path.lastIndexOf("/");
             var stem = "";
             var leaf = "";

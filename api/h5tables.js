@@ -22,7 +22,6 @@ module.exports = class H5Tables {
     }
         
 makeTable(path) {
-    path=decodeURIComponent(path);
     var index=path.lastIndexOf("/");
     var stem = "";
     var leaf = "";
@@ -121,7 +120,6 @@ makeTable(path) {
 }
 
 modifyFields(path) {
-    path=decodeURIComponent(path);
     var index=path.lastIndexOf("/");
     var stem = "";
     var leaf = "";

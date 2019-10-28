@@ -40,6 +40,18 @@ getInfo(path) {
         
 make(path) {
     path=decodeURIComponent(path);
+    var index=path.lastIndexOf("/");
+    var stem = "";
+    var leaf = "";
+    if(index>=0)
+    {
+        stem=path.substring(0, index);
+        leaf=path.substring(index+1, path.length);
+    }
+    else
+        leaf = path;
+    //console.dir(stem);
+    //console.dir(leaf);
             while(this.isPortTaken(this.port)){
                 
             }
@@ -87,7 +99,6 @@ make(path) {
 }
 
     read(path, cb) {
-        path=decodeURIComponent(path);
         var index=path.lastIndexOf("/");
         var stem = "";
         var leaf = "";
@@ -136,7 +147,6 @@ make(path) {
     }
     
     readRegion(path, cb) {
-        path=decodeURIComponent(path);
         var index=path.lastIndexOf("/");
         var stem = "";
         var leaf = "";
