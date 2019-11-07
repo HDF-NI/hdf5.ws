@@ -4,8 +4,8 @@ Web socket API for moving data to and from hdf5 files.
 
 ### Installing
 ```
-yarn config set hdf5_home_linux <your native hdf path>
-yarn install
+pnpm config set hdf5_home_linux <your native hdf path>
+pnpm install
 ```
 
 ### App usage
@@ -78,7 +78,7 @@ The boundary is how many tiles out to the edge of the final region from the init
 The tests are performed by cypress.
 
 ```
-yarn test
+pnpm test
 ```
 
 For the 'test panning images' test I copy the http://www.nasa.gov/images/content/734344main_g306_wide_large.jpg picture to hdf5.ws/test/examples folder.

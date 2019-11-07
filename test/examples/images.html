@@ -15,21 +15,20 @@
 <body>
 <div></div><script>
 function makeImage(event, element){
-    console.log("drop handler ");
     if (event.dataTransfer) { event.dataTransfer.dropEffect = 'move'; }
     var urlList = event.dataTransfer.getData("text/uri-list");
-    for(var i = 0;i<event.dataTransfer.types.length;i++){
+    /*for(var i = 0;i<event.dataTransfer.types.length;i++){
         console.log(event.dataTransfer.types[i]);
     }
     console.log(urlList);
     for(var i = 0;i<urlList.length;i++){
         console.log(urlList[i]);
-    }
+    }*/
    var dataItems = event.dataTransfer.items;
-   console.log("how many "+dataItems.length);
-   if(dataItems.length>0)dataItems[0].getAsString(function (s){console.log(s);});
+   //console.log("how many "+dataItems.length);
+   //if(dataItems.length>0)dataItems[0].getAsString(function (s){console.log(s);});
    for (var i = 1; i < dataItems.length; i += 1) {
-    console.log(dataItems[i].kind+" type "+dataItems[i].type);
+    //console.log(dataItems[i].kind+" type "+dataItems[i].type);
         while (element.firstChild) {
           element.removeChild(element.firstChild);
         }
@@ -43,11 +42,10 @@ function makeImage(event, element){
              photoplate.height=img.height;
              context.drawImage(img, 0, 0);
             var hdf5Interface=new HDF5Interface(9700);
-            hdf5Interface.createGroup("pmcservices/x-ray/plates");
+            hdf5Interface.createGroup("pmcservices/x-ray/plates", function(){
             var data=context.getImageData(0,0,img.width,img.height).data;
             hdf5Interface.makeImage("pmcservices/x-ray/plates/nightwatch.jpg", data, {name: file.name, width: img.width, height: img.height, planes: 4, npals: 4, size: 4*img.width*img.height}, function(){
                 hdf5Interface.requestImage("pmcservices/x-ray/plates/nightwatch.jpg", function(data, metaData){
-                    console.log(metaData);
                     document.getElementById("results").appendChild(document.createTextNode(JSON.stringify(metaData)));
                     var imageData=context.createImageData(metaData.width, metaData.height);
                     var pos=0;
@@ -63,8 +61,12 @@ function makeImage(event, element){
                     }
                      // Display new data in browser!
                     context.putImageData(imageData, 100, 100);
+                    var endTxt = document.createTextNode("Put");
+                    endTxt.id="put";
+                    document.getElementById("results").appendChild(endTxt);
             
                 });
+            });
             });
          }
        img.src = file;//window.URL.createObjectURL(file);
@@ -79,6 +81,9 @@ function makeImage(event, element){
     event.preventDefault();
    }
     event.preventDefault();
+}
+
+function doMouseDown(event, element) {
 }
 
 function doDragStart(event, element) {
@@ -112,7 +117,7 @@ function doDragStart(event, element) {
 }
 
 function doDragOver(e) {
-    console.log("doDragOver "+e.target.id);
+//    console.log("doDragOver "+e.target.id);
     e.preventDefault();
 };
 
@@ -123,13 +128,13 @@ function dragHandler(ev, element) {
 }
 
 function dragEndHandler(ev, element) {
-    console.log("dragEndHandler "+ev.target.id);
+//    console.log("dragEndHandler "+ev.target.id);
   ev.target.style.opacity = '1.0';  // this / e.target is the source node.
   ev.preventDefault();
 }
 
 </script><div id="draggable" >
-    <canvas id="nwCanvas" draggable="true" width="550" height="381" ondragstart="doDragStart(event, this)" ondragover="doDragOver(event)" ondrag="dragHandler(event, this)" ondragend="dragEndHandler(event, this)"></canvas>
+    <canvas id="nwCanvas" draggable="true" width="550" height="381" onmousedown="doMouseDown(event, this)" ondragstart="doDragStart(event, this)" ondragover="doDragOver(event)" ondrag="dragHandler(event, this)" ondragend="dragEndHandler(event, this)"></canvas>
     <script>
       var canvas = document.getElementById('nwCanvas');
       var context = canvas.getContext('2d');

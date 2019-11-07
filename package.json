@@ -12,12 +12,12 @@
   },
   "dependencies": {
     "co": "4.6.0",
-    "hdf5": "HDF-NI/hdf5.node",
+    "hdf5": "../hdf5.node",
     "ws": "websockets/ws"
   },
   "scripts": {
     "start": "node test/server.js",
-    "test": "yarn start & wait-on http://localhost:8888/images.html & yarn run cypress open"
+    "test": "pnpm start & wait-on http://roger-G74Sx:8888/images.html & pnpx cypress open"
   },
   "contributors": [
     "Roger I Martin <mathmldashx@yahoo.com> (https://github.com/rimmartin/)"
@@ -28,7 +28,7 @@
     "url": "https://github.com/HDF-NI/hdf5.ws/issues"
   },
   "devDependencies": {
-    "cypress": "^3.5.0",
+    "cypress": "^3.6.0",
     "wait-on": "^3.2.0"
   }
 }

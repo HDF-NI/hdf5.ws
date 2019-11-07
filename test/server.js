@@ -50,13 +50,13 @@ var H5Images = require('../api/h5images.js');
              response.end("");
        }
        else if(resourcePath.startsWith("/make_image/")){
-         h5images.make(resourcePath);
+         h5images.make(resourcePath.substring(12));
          response.writeHead(200);
          //response.write("hoe");
-             response.end("");
+             response.end("something");
        }
        else if(resourcePath.startsWith("/read_image/")){
-         h5images.read(resourcePath, function(metaData){
+         h5images.read(resourcePath.substring(12), function(metaData){
            //response.write(JSON.stringify(metaData));
          });
          response.writeHead(200);
@@ -80,7 +80,7 @@ var H5Images = require('../api/h5images.js');
              response.end("");
        }
        else if(resourcePath.startsWith("/create_group/")){
-         h5.createGroup(resourcePath);
+         h5.createGroup(resourcePath.substring(14));
          response.writeHead(200);
          //response.write("hoe");
              response.end("");

@@ -50,8 +50,8 @@ make(path) {
     }
     else
         leaf = path;
-    //console.dir(stem);
-    //console.dir(leaf);
+//    console.dir(stem);
+//    console.dir(leaf);
             while(this.isPortTaken(this.port)){
                 
             }
@@ -99,6 +99,7 @@ make(path) {
 }
 
     read(path, cb) {
+        path=decodeURIComponent(path);
         var index=path.lastIndexOf("/");
         var stem = "";
         var leaf = "";
@@ -109,8 +110,8 @@ make(path) {
         }
         else
             leaf = path;
-        //console.dir(stem);
-        //console.dir(leaf);
+//        console.dir(stem);
+//        console.dir(leaf);
         while(this.isPortTaken(this.port)){
             
         }

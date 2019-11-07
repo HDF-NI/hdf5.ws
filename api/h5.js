@@ -38,8 +38,6 @@ createH5(path) {
 
 createGroup(path) {
     path=decodeURIComponent(path);
-    if(!path.startsWith("/create_group/")) return;
-    path=path.substring(14);
     var file = new hdf5.File(global.currentH5Path, Access.ACC_RDWR);
     var group=file.createGroup(path);
     group.close();
@@ -49,8 +47,6 @@ createGroup(path) {
 
 renameGroup(path) {
     path=decodeURIComponent(path);
-    if(!path.startsWith("/rename_group/")) return;
-    path=path.substring(14);
     var index=path.lastIndexOf("/");
     var stem = "";
     var leaf = "";
@@ -91,8 +87,7 @@ renameGroup(path) {
 
 setCompression(path) {
     path=decodeURIComponent(path);
-    if(!path.startsWith("/set_compression/")) return;
-    let property=JSON.parse(path.substring(17));
+    let property=JSON.parse(path);
     
     this.compression=property.compression
     
