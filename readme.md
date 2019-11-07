@@ -1,4 +1,5 @@
 [![Node.js Version][node-version-image]][node-version-url]
+[![Build Status][travis-ci-build-image]][travis-ci-build-url]
 
 Web socket API for moving data to and from hdf5 files.
 
