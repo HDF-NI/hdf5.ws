@@ -41,7 +41,10 @@ install:
   - export HDF5_HOME_LINUX=/usr/lib/x86_64-linux-gnu/hdf5/serial
   - if [[ "$TRAVIS_OS_NAME" == "osx" ]] ; then echo ${HDF5_HOME} ; else eval "${GCC_VERSION}" ; fi
   # ${CXX} --version
-  - pnpm install --longlong_type=LONGLONG53BITS --hdf5_home_mac=${HDF5_HOME_MAC} --hdf5_home_linux=${HDF5_HOME_LINUX}
+  - pnpm config set longlong_type LONGLONG53BITS
+  - pnpm config set hdf5_home_mac ${HDF5_HOME_MAC}
+  - pnpm config set hdf5_home_linux ${HDF5_HOME_LINUX}
+  - pnpm install
 
 before-scripte:
   - export PATH=`pwd`/node_modules/.bin:${PATH}
