@@ -12,7 +12,7 @@
   },
   "dependencies": {
     "co": "4.6.0",
-    "hdf5": "../hdf5.node",
+    "hdf5": "HDF-NI/hdf5.node",
     "ws": "websockets/ws"
   },
   "scripts": {
