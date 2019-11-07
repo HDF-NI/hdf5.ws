@@ -35,6 +35,7 @@ before_install:
   - cd ..
   - export HDF5_HOME=`pwd`/hdf5-1.10.2/dist
   - npm install -g pnpm
+  - pnpx cypress install
   
 install:
   - export HDF5_HOME_MAC=`pwd`/hdf5-1.10.2/dist
