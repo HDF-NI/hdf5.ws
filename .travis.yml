@@ -34,13 +34,14 @@ before_install:
   - g++ --version
   - cd ..
   - export HDF5_HOME=`pwd`/hdf5-1.10.2/dist
+   - npm install -g pnpm
   
 install:
   - export HDF5_HOME_MAC=`pwd`/hdf5-1.10.2/dist
   - export HDF5_HOME_LINUX=/usr/lib/x86_64-linux-gnu/hdf5/serial
   - if [[ "$TRAVIS_OS_NAME" == "osx" ]] ; then echo ${HDF5_HOME} ; else eval "${GCC_VERSION}" ; fi
   # ${CXX} --version
-  - npm install --longlong_type=LONGLONG53BITS --hdf5_home_mac=${HDF5_HOME_MAC} --hdf5_home_linux=${HDF5_HOME_LINUX}
+  - pnpm install --longlong_type=LONGLONG53BITS --hdf5_home_mac=${HDF5_HOME_MAC} --hdf5_home_linux=${HDF5_HOME_LINUX}
 
 before-scripte:
   - export PATH=`pwd`/node_modules/.bin:${PATH}
@@ -53,4 +54,4 @@ script:
   - export DYLD_LIBRARY_PATH=`pwd`/hdf5-1.10.2/dist/lib:${DYLD_LIBRARY_PATH}
   - echo ${PATH}
   - ls `pwd`/node_modules/.bin
-  - npm test
+  - pnpm test
