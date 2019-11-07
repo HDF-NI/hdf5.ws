@@ -34,7 +34,7 @@ before_install:
   - g++ --version
   - cd ..
   - export HDF5_HOME=`pwd`/hdf5-1.10.2/dist
-   - npm install -g pnpm
+  - npm install -g pnpm
   
 install:
   - export HDF5_HOME_MAC=`pwd`/hdf5-1.10.2/dist
