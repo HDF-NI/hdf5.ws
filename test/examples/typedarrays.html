@@ -8,23 +8,24 @@
 <body>
 <div></output><script>
 function makeDataSet(){
-    var data=new Float64Array([1.0, 2.0, 3.0, 5.0]);
+    const theData=new Float64Array([1.0, 2.0, 3.0, 5.0]);
     var hdf5Interface=new HDF5Interface(9700);
-    hdf5Interface.createGroup("pmcservices/x-ray/refinement");
-    hdf5Interface.makeDataset("pmcservices/x-ray/refinement/Matrix", data, function(){
-    hdf5Interface.readDataset("pmcservices/x-ray/refinement/Matrix", function(data, metaData){
-        console.log(data);
-        var dataStr="[";
-        for(var i=0;i<data.length;i++){
-            dataStr+=data[i].toFixed(1);
-            if(i<data.length-1)dataStr+=", ";
-        }
-        dataStr+="]";
-        document.getElementById("results").appendChild(document.createTextNode(dataStr));
-    });
+    hdf5Interface.createGroup("pmcservices/x-ray/refinement", function(){
+        hdf5Interface.makeDataset("pmcservices/x-ray/refinement/Matrix", theData, {reconstructor: theData.constructor.name, rank: 1, rows: theData.length, cols: 1}, function(){
+            hdf5Interface.readDataset("pmcservices/x-ray/refinement/Matrix", function(data, metaData){
+                console.log(data);
+                var dataStr="[";
+                for(var i=0;i<data.length;i++){
+                    dataStr+=data[i].toFixed(1);
+                    if(i<data.length-1)dataStr+=", ";
+                }
+                dataStr+="]";
+                document.getElementById("results").appendChild(document.createTextNode(dataStr));
+            });
+        });        
     });
 
 }
-</script><form><button type="button" name="hdf5makedataset" onclick="makeDataSet()">Make Dataset</button></form><output id="results"></div>
+</script><form><button id="pressme" type="button" name="hdf5makedataset" onclick="makeDataSet()">Make Dataset</button></form><output id="results"></div>
 </body>
 </html>

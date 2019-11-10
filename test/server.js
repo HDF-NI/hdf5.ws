@@ -1,6 +1,7 @@
 var os = require("os");
 var net = require('net')
 var http = require('http')
+var https = require('https')
 var Transform = require('stream').Transform
 var url = require('url')
 var fs = require('fs')
@@ -13,6 +14,7 @@ var Access = require('hdf5/lib/globals').Access;
 var H5 = require('../api/h5.js');
 var H5Datasets = require('../api/h5datasets.js');
 var H5Images = require('../api/h5images.js');
+var H5Tables = require('../api/h5tables.js');
 
   global.currentH5Path="newone.h5";
   if(global.currentH5Path.length>0 && !fs.existsSync(global.currentH5Path)){
@@ -22,49 +24,27 @@ var H5Images = require('../api/h5images.js');
       file.close();
   }
   let h5=new H5();
-  let h5datasets=new H5Datasets(h5, 9700);
-  let h5images=new H5Images(h5, 9700);
+  let h5datasets=new H5Datasets(h5, 8888);
+  let h5images=new H5Images(h5, 8888);
+  let h5tables=new H5Tables(h5, 8888);
 
-  var theServer=http.createServer(function (request, response) {
+  var theServer=https.createServer({
+      key: fs.readFileSync('../scad.key'),
+      cert: fs.readFileSync('../scad.cert')
+  }, (request, response) => {
      try {
        var requestUrl = url.parse(request.url);
            //console.dir("requestUrl "+requestUrl);
 
        var resourcePath=path.normalize(requestUrl.pathname);
            //console.dir("resourcePath "+resourcePath);
-       if(resourcePath.startsWith("/make_dataset/")){
-         h5datasets.makeDataset(resourcePath);
+       if(resourcePath.startsWith("/get_image_info/")){
          response.writeHead(200);
-         //response.write("hoe");
-             response.end("");
-       }
-       else if(resourcePath.startsWith("/read_dataset/")){
-         h5datasets.readDataset(resourcePath);
-         response.writeHead(200);
-         //response.write("hoe");
-             response.end("");
-       }
-       else if(resourcePath.startsWith("/get_image_info/")){
-         response.writeHead(200);
-         response.write(h5images.getInfo(resourcePath));
-             response.end("");
-       }
-       else if(resourcePath.startsWith("/make_image/")){
-         h5images.make(resourcePath.substring(12));
-         response.writeHead(200);
-         //response.write("hoe");
-             response.end("something");
-       }
-       else if(resourcePath.startsWith("/read_image/")){
-         h5images.read(resourcePath.substring(12), function(metaData){
-           //response.write(JSON.stringify(metaData));
-         });
-         response.writeHead(200);
-         //response.write("hoe");
+         response.write(h5images.getInfo(resourcePath.substring(17)));
              response.end("");
        }
        else if(resourcePath.startsWith("/read_image_region/")){
-         h5images.readRegion(resourcePath, function(metaData){
+         h5images.readRegion(resourcePath.substring(20), function(metaData){
            //response.write(JSON.stringify(metaData));
          });
          response.writeHead(200);
@@ -72,7 +52,7 @@ var H5Images = require('../api/h5images.js');
              response.end("");
        }
        else if(resourcePath.startsWith("/read_image_mosaic/")){
-         h5images.readMosaic(resourcePath, function(metaData){
+         h5images.readMosaic(resourcePath.substring(19), function(metaData){
            //response.write(JSON.stringify(metaData));
          });
          response.writeHead(200);
@@ -130,4 +110,27 @@ var H5Images = require('../api/h5images.js');
     socket.end('HTTP/1.1 400 Bad Request\r\n\r\n');
   });  
   theServer.on('close', function () { console.dir("the server closed ")});
+  theServer.on('upgrade', function upgrade(request, socket, head) {
+  const pathname = url.parse(request.url).pathname;
+  console.log("pathname "+pathname);
+  if (pathname.startsWith("/make_dataset/")) {
+    h5datasets.make.handleUpgrade(request, socket, head, function done(ws) {
+      h5datasets.make.emit('connection', ws, request);
+    });
+  } if (pathname.startsWith("/read_dataset/")) {
+    h5datasets.read.handleUpgrade(request, socket, head, function done(ws) {
+      h5datasets.read.emit('connection', ws, request);
+    });
+  } else if (pathname.startsWith("/make_image/")) {
+    h5images.make.handleUpgrade(request, socket, head, function done(ws) {
+      h5images.make.emit('connection', ws, request);
+    });
+  } else if (pathname.startsWith("/read_image/")) {
+    h5images.read.handleUpgrade(request, socket, head, function done(ws) {
+      h5images.read.emit('connection', ws, request);
+    });
+  } else {
+    socket.destroy();
+  }
+});
   theServer.listen(8888);

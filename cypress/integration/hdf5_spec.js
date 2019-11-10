@@ -3,7 +3,7 @@ describe('HDF5 Interface Test', function() {
       const dataTransfer = new DataTransfer;
     cy.server()
     cy.route('POST', '/read_image/').as('ri')
-    cy.visit('http://localhost:8888/images.html')
+    cy.visit('https://localhost:8888/images.html')
     cy.get('#nwCanvas').trigger('mousedown', {which: 1})
                        .trigger('dragstart', {dataTransfer}).trigger('drag', {dataTransfer}).trigger('dragend')
                        .trigger('mousemove', {clientX: 250, clientY: 381 })
@@ -12,5 +12,5 @@ describe('HDF5 Interface Test', function() {
                        .trigger('mousemove', {clientX: 250, clientY: 500 })
                        .trigger('dragover').trigger('drop', {dataTransfer})
                        .trigger('mouseup', {force: true}).get('@ri');
-  })
-})
+  });
+});

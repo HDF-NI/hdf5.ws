@@ -13,12 +13,104 @@ var State = require('hdf5/lib/globals').State;
 var H5OType = require('hdf5/lib/globals').H5OType;
 var HLType = require('hdf5/lib/globals').HLType;
 var Interlace = require('hdf5/lib/globals').Interlace;
+const WebSocket = require('ws');
+
+function noop() {}
+
+function heartbeat() {
+  this.isAlive = true;
+}
 
 module.exports = class H5Tables { 
     constructor (h5, port) {
         this.h5=h5
         this.port=port
         this.status=false
+        this.make = new WebSocket.Server({ noServer: true });
+        this.make.on('connection', function connection(ws) {
+            ws.binaryType = "arraybuffer";
+            var msgCount=0;
+            var metaData;
+            var columnIndex=0;
+            var tableModel=Array();
+          ws.on('message', function incoming(message) {
+              if(typeof message === 'string'){
+                  if(msgCount===0)path=message;
+                  else {metaData=JSON.parse(message);
+                  columnIndex=0;
+                  tableModel=Array();}
+                  msgCount++;
+              }
+              else{
+                  var index=path.lastIndexOf("/");
+                  var stem = "";
+                  var leaf = "";
+                  if(index>=0)
+                  {
+                      stem=path.substring(0, index);
+                      leaf=path.substring(index+1, path.length);
+                  }
+                  else
+                      leaf = path;
+                  var tableModelBuffer=message;
+               switch(metaData.reconstructors[columnIndex]){
+                   case "Int32Array":
+                       tableModel[tableModel.length]=new Int32Array(tableModelBuffer.buffer, tableModelBuffer.byteOffset, tableModelBuffer.byteLength / Int32Array.BYTES_PER_ELEMENT);
+                       tableModel[tableModel.length-1].name=metaData.column_labels[columnIndex];
+                       break;
+                   case "Uint32Array":
+                       tableModel[tableModel.length]=new Uint32Array(tableModelBuffer.buffer, tableModelBuffer.byteOffset, tableModelBuffer.byteLength / Uint32Array.BYTES_PER_ELEMENT);
+                       tableModel[tableModel.length-1].name=metaData.column_labels[columnIndex];
+                       break;
+                   case "Float64Array":
+                       tableModel[tableModel.length]=new Float64Array(tableModelBuffer.buffer, tableModelBuffer.byteOffset, tableModelBuffer.byteLength / Float64Array.BYTES_PER_ELEMENT);
+                       tableModel[tableModel.length-1].name=metaData.column_labels[columnIndex];
+                       break;
+                   case "Float32Array":
+                       tableModel[tableModel.length]=new Float32Array(tableModelBuffer.buffer, tableModelBuffer.byteOffset, tableModelBuffer.byteLength / Float32Array.BYTES_PER_ELEMENT);
+                       tableModel[tableModel.length-1].name=metaData.column_labels[columnIndex];
+                       break;
+                   case "Uint8Array":
+                       var splitStr=tableModelBuffer.toString().split(",");
+                       var information = new Array(splitStr.length);
+                       for(var i=0;i<splitStr.length;i++){
+                           information[i]=splitStr[i];
+                       }
+                       tableModel[tableModel.length]=information;
+                       tableModel[tableModel.length-1].name=metaData.column_labels[columnIndex];
+                       break;
+                   case "Array":
+                       var information = new Array(metaData.rows);
+                       //console.dir(tableModelBuffer.toString());
+                       for(var i=0;i<metaData.rows;i++){
+                           information[i]=tableModelBuffer[i];
+                       //console.dir(information[i]);
+                       }
+                       tableModel[tableModel.length]=information;
+                       tableModel[tableModel.length-1].name=metaData.column_labels[columnIndex];
+                       break;
+                    default:
+                       console.dir(metaData.column_labels[columnIndex]+" unsupported type: "+metaData.reconstructors[columnIndex]+" "+tableModelBuffer.byteLength);
+                       break;
+               }
+                if(columnIndex===metaData.column_labels.length-1){
+                var file = new hdf5.File(global.currentH5Path, Access.ACC_RDWR);
+                var group=file.openGroup(stem);
+                    h5tb.makeTable(group.id, leaf, tableModel);
+                group.close();
+                file.close();
+                }
+                columnIndex++;
+              }
+          });
+            ws.on('close', function close() {
+              //console.log('disconnected');
+                wss.close();
+              //resolve("");
+            });
+        
+          ws.send('something');
+        });        
     }
         
 makeTable(path) {
@@ -149,7 +241,7 @@ modifyFields(path) {
 }
 
     isPortTaken(port) {
-      var net = require('net')
+        try{
       var tester = net.createServer()
       .once('error', function (err) {
         if (err.code != 'EADDRINUSE') return false
@@ -159,6 +251,11 @@ modifyFields(path) {
         tester.once('close', function() { return false })
         .close()
       })
-      .listen(port)
-    }    
+      .listen(port);
+        }
+        catch(ex){
+            
+        }
+      return false;
+    }
 }

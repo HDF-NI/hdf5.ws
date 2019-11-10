@@ -1,6 +1,6 @@
 dependencies:
   co: 4.6.0
-  hdf5: 'link:../hdf5.node'
+  hdf5: github.com/HDF-NI/hdf5.node/264bd0708510200b2f0415cbd26910837ec96151
   ws: github.com/websockets/ws/289724f67d28d37fe02c4c66a6b86c581d7f4f97
 devDependencies:
   cypress: 3.6.0
@@ -1291,6 +1291,15 @@ packages:
     dev: true
     resolution:
       integrity: sha1-lSj0QtqxsihOWLQ3m7GU4i4MQAU=
+  github.com/HDF-NI/hdf5.node/264bd0708510200b2f0415cbd26910837ec96151:
+    dev: false
+    engines:
+      node: '>=6.0.0'
+    name: hdf5
+    requiresBuild: true
+    resolution:
+      tarball: 'https://codeload.github.com/HDF-NI/hdf5.node/tar.gz/264bd0708510200b2f0415cbd26910837ec96151'
+    version: 0.3.5
   github.com/websockets/ws/289724f67d28d37fe02c4c66a6b86c581d7f4f97:
     dependencies:
       async-limiter: 1.0.1
@@ -1311,6 +1320,6 @@ packages:
 specifiers:
   co: 4.6.0
   cypress: ^3.6.0
-  hdf5: ../hdf5.node
+  hdf5: HDF-NI/hdf5.node
   wait-on: ^3.2.0
   ws: websockets/ws
