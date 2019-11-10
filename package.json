@@ -17,7 +17,7 @@
   },
   "scripts": {
     "start": "node test/server.js",
-    "test": "pnpm start & wait-on https://localhost:8888/images.html & pnpx cypress open"
+    "test": "pnpm start & wait-on https://localhost:8888/images.html & pnpx cypress run"
   },
   "contributors": [
     "Roger I Martin <mathmldashx@yahoo.com> (https://github.com/rimmartin/)"
