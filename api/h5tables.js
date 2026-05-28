@@ -1,19 +1,10 @@
-var os = require("os");
-var hdf5 = require('hdf5').hdf5;
-var h5im = require('hdf5').h5im;
-var h5lt = require('hdf5').h5lt;
-var h5tb = require('hdf5').h5tb;
-var h5pt = require('hdf5').h5pt;
+import os  from "os";
+import {hdf5, h5im, h5lt, h5tb, h5pt}  from 'hdf5';
+import {Access, CreationOrder, H5Type, Interlace}  from 'hdf5/lib/globals';
+import WebSocket from 'ws';
+import { WebSocketServer } from 'ws';
+import co  from 'co';
 
-var co = require('co');
-
-var Access = require('hdf5/lib/globals').Access;
-var CreationOrder = require('hdf5/lib/globals').CreationOrder;
-var State = require('hdf5/lib/globals').State;
-var H5OType = require('hdf5/lib/globals').H5OType;
-var HLType = require('hdf5/lib/globals').HLType;
-var Interlace = require('hdf5/lib/globals').Interlace;
-const WebSocket = require('ws');
 
 function noop() {}
 
@@ -21,12 +12,12 @@ function heartbeat() {
   this.isAlive = true;
 }
 
-module.exports = class H5Tables { 
+export default class H5Tables { 
     constructor (h5, port) {
         this.h5=h5
         this.port=port
         this.status=false
-        this.make = new WebSocket.Server({ noServer: true });
+        this.make = new WebSocketServer({ noServer: true });
         this.make.on('connection', function connection(ws) {
             ws.binaryType = "arraybuffer";
             var msgCount=0;
@@ -132,8 +123,7 @@ makeTable(path) {
     }
     const _this=this;
     //var p = yield new Promise((resolve, reject) => {
-        var WebSocketServer = require('ws').Server
-          , wss = new WebSocketServer({ host: os.hostname(), port: _this.port, path: '/make-table', perMessageDeflate: true  });
+           const wss = new WebSocketServer({ host: os.hostname(), port: _this.port, path: '/make-table', perMessageDeflate: true  });
         
         wss.on('connection', function connection(ws) {
             ws.binaryType = "arraybuffer";
@@ -211,6 +201,26 @@ makeTable(path) {
         return;
 }
 
+readTable(path) {
+    var index=path.lastIndexOf("/");
+    var stem = "";
+    var leaf = "";
+    if(index>=0)
+    {
+        stem=path.substring(0, index);
+        leaf=path.substring(index+1, path.length);
+    }
+    else
+        leaf = path;
+    console.dir(stem);
+    console.dir(leaf);
+    var file = new hdf5.File(global.currentH5Path, Access.ACC_RDONLY);
+    var group=file.openGroup(stem);
+    var tableModel=h5tb.readTable(group.id, leaf);
+    group.close();
+    file.close();
+    this.body = "";
+}
 modifyFields(path) {
     var index=path.lastIndexOf("/");
     var stem = "";
@@ -238,6 +248,47 @@ modifyFields(path) {
     
       ws.send('something');
     });        
+}
+
+readCsv(path) {
+    var index=path.lastIndexOf("/");
+    var stem = "";
+    var leaf = "";
+    if(index>=0)
+    {
+        stem=path.substring(0, index);
+        leaf=path.substring(index+1, path.length);
+    }
+    else
+        leaf = path;
+    console.dir(stem);
+    console.dir(leaf);
+    const _this=this
+    var WebSocketServer = require('ws').Server
+        , wss = new WebSocketServer({ host: os.hostname(), port: _this.port, path: '/read-text', perMessageDeflate: false });
+    
+    wss.on('connection', function connection(ws) {
+        ws.binaryType = "nodebuffer";
+        ws.on('close', function close() {
+            //resolve("");
+            wss.close(function(){_this.status=false});
+        });
+        var file = new hdf5.File(global.currentH5Path, Access.ACC_RDONLY);
+        var group=file.openGroup(stem);
+        var options=new Object();
+        options.reconstructor=readBuffer.constructor.name;
+        const readBuffer=h5lt.readDataset(group.id, leaf);
+        //ws.send(JSON.stringify(options));
+        ws.send(readBuffer, { binary: true, mask: false });
+        //ws.end("");
+
+        group.close();
+        file.close();
+        //wss.close(function(){_this.status=false});
+        
+    });
+    
+     this.body = "";
 }
 
     isPortTaken(port) {

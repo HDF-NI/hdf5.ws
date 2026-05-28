@@ -8,8 +8,9 @@
     "url": "https://github.com/HDF-NI/hdf5.ws.git"
   },
   "engines": {
-    "node": ">=6.0.0"
+    "node": ">=12.0.0"
   },
+  "type": "module",
   "dependencies": {
     "co": "4.6.0",
     "hdf5": "HDF-NI/hdf5.node",
@@ -17,7 +18,7 @@
   },
   "scripts": {
     "start": "node test/server.js",
-    "test": "pnpm start & wait-on https://localhost:8888/images.html & pnpx cypress run"
+    "test": "pnpm start & wait-on https://localhost:8888/images.html & pnpx cypress open"
   },
   "contributors": [
     "Roger I Martin <mathmldashx@yahoo.com> (https://github.com/rimmartin/)"
@@ -28,7 +29,7 @@
     "url": "https://github.com/HDF-NI/hdf5.ws/issues"
   },
   "devDependencies": {
-    "cypress": "^3.6.0",
-    "wait-on": "^3.2.0"
+    "cypress": "^13.17.0",
+    "wait-on": "^8.0.2"
   }
 }

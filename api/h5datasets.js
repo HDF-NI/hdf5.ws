@@ -1,12 +1,9 @@
-var os = require("os");
-var hdf5 = require('hdf5').hdf5;
-var h5im = require('hdf5').h5im;
-var h5lt = require('hdf5').h5lt;
+import os  from "os";
+import {hdf5, h5im, h5lt}  from 'hdf5';
 
-var Access = require('hdf5/lib/globals').Access;
-var CreationOrder = require('hdf5/lib/globals').CreationOrder;
-var H5Type = require('hdf5/lib/globals.js').H5Type;
-const WebSocket = require('ws');
+import {Access, CreationOrder, H5Type}  from 'hdf5/lib/globals';
+import WebSocket from 'ws';
+import { WebSocketServer } from 'ws';
 
 function noop() {}
 
@@ -14,13 +11,13 @@ function heartbeat() {
   this.isAlive = true;
 }
 
-module.exports = class H5Datasets { 
+export default class H5Datasets { 
     constructor (h5, port) {
         this.h5=h5
         this.port=port
         this.status=false
-        this.make = new WebSocket.Server({ noServer: true });
-        this.read = new WebSocket.Server({ noServer: true });
+        this.make = new WebSocketServer({ noServer: true });
+        this.read = new WebSocketServer({ noServer: true });
         this.make.on("error", error => {
             console.log("The server encountered an error! "+error.message);
         });
