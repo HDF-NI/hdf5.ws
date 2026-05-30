@@ -1,17 +1,10 @@
-var hdf5 = require('hdf5').hdf5;
-var h5im = require('hdf5').h5im;
-var h5lt = require('hdf5').h5lt;
-var h5tb = require('hdf5').h5tb;
-var h5pt = require('hdf5').h5pt;
+import {hdf5, h5im, h5lt, h5tb, h5pt} from 'hdf5';
+import {Access, CreationOrder, H5Type, Interlace} from 'hdf5/lib/globals';
+import os from 'os';
+import WebSocket from 'ws';
+import { WebSocketServer } from 'ws';
 
-var Access = require('hdf5/lib/globals').Access;
-var CreationOrder = require('hdf5/lib/globals').CreationOrder;
-var State = require('hdf5/lib/globals').State;
-var H5OType = require('hdf5/lib/globals').H5OType;
-var HLType = require('hdf5/lib/globals').HLType;
-var Interlace = require('hdf5/lib/globals').Interlace;
-
-module.exports = class H5 { 
+export default class H5 { 
     constructor () {
         //this.port=port
         this.status=false

@@ -263,29 +263,63 @@ readCsv(path) {
         leaf = path;
     console.dir(stem);
     console.dir(leaf);
+    console.dir(os.hostname());
+    console.dir(this.port);
     const _this=this
-    var WebSocketServer = require('ws').Server
-        , wss = new WebSocketServer({ host: os.hostname(), port: _this.port, path: '/read-text', perMessageDeflate: false });
+    var wss = new WebSocketServer({ host: os.hostname(), port: _this.port, path: '/read-table', perMessageDeflate: false });
     
     wss.on('connection', function connection(ws) {
-        ws.binaryType = "nodebuffer";
+        //ws.binaryType = "nodebuffer";
         ws.on('close', function close() {
             //resolve("");
+            console.log("WebSocket connection closed, shutting down server...");
             wss.close(function(){_this.status=false});
         });
         var file = new hdf5.File(global.currentH5Path, Access.ACC_RDONLY);
         var group=file.openGroup(stem);
         var options=new Object();
-        options.reconstructor=readBuffer.constructor.name;
-        const readBuffer=h5lt.readDataset(group.id, leaf);
-        //ws.send(JSON.stringify(options));
-        ws.send(readBuffer, { binary: true, mask: false });
+        //options.reconstructor=readBuffer.constructor.name;
+        console.log("group.id "+group.id+" t leaf "+leaf);
+        const tableInfo = h5tb.getTableInfo(group.id, leaf);
+        console.log("Table info:", tableInfo);
+
+        const tableModel=h5tb.readTable(group.id, leaf);
+        const columnNames = tableModel.map(col => col.name);
+        const totalRows = tableModel.length > 0 ? tableModel[0].length : 0;
+
+        const rows = [];
+        for (let r = 0; r < totalRows; r++) {
+            const rowObj = {};
+            columnNames.forEach((colName, colIndex) => {
+                rowObj[colName] = tableModel[colIndex][r];
+            });
+            rows.push(rowObj);
+        }
+        const responsePayload = {
+            type: 'TABLE_DATA',
+            tableName: leaf,
+            columns: columnNames, // Useful for dynamic headers
+            records: rows
+        };
+        ws.send(JSON.stringify(responsePayload), { binary: false, mask: false });
         //ws.end("");
 
+        ws.send(JSON.stringify({ type: 'STREAM_COMPLETE' }));
         group.close();
         file.close();
-        //wss.close(function(){_this.status=false});
+
+        // Gracefully give the network card a tiny 100ms window to flush buffers, then disconnect
+        setTimeout(() => {
+            ws.close(); 
+        }, 100);
         
+    });
+    wss.on('error', function error(err) {
+        console.dir(err);
+    });
+    wss.on('listening', function listening() {
+        console.log("WebSocketServer for CSV table is listening on port "+_this.port);
+        _this.status=true;
     });
     
      this.body = "";
